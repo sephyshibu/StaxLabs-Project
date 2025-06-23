@@ -9,9 +9,12 @@ export class OrderRepositoryImpl implements IOrderRepository {
     return await OrderModel.create(data);
   }
 
-  async getAllOrders(): Promise<IOrder[]> {
-      return await OrderModel.find()
-  }
+async getAllOrders(): Promise<IOrder[]> {
+  return await OrderModel.find()
+    .populate('vendorId', 'name') // fetch vendor name only
+    .populate('customerId', 'name') // fetch customer name only
+    .populate('items.productId', 'title pricePerUnit'); // fetch product name & price
+}
 
   async getOrdersByVendor(vendorId: string): Promise<IOrder[]> {
     return await OrderModel.find({ vendorId })
