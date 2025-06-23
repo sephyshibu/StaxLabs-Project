@@ -20,6 +20,8 @@ export default function VendorDashboard() {
 
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
@@ -92,6 +94,26 @@ export default function VendorDashboard() {
       toast.error(isEditMode ? "Update failed" : "Add failed");
     }
   };
+  const confirmDeleteProduct = (productId: string) => {
+  setProductToDelete(productId);
+  setShowDeleteModal(true);
+};
+
+const handleDeleteConfirmed = async () => {
+  if (!productToDelete) return;
+
+  try {
+    await axiosInstance.delete(`/products/${productToDelete}`);
+    toast.success("Product deleted");
+  } catch {
+    toast.error("Delete failed");
+  } finally {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
+    await fetchProducts();
+  }
+};
+
 
   return (
     <div className="max-w-5xl mx-auto p-4 relative">
@@ -145,20 +167,11 @@ export default function VendorDashboard() {
                       </button>
                       <button
                         className="bg-red-500 text-white px-2 py-1 rounded"
-                        onClick={async () => {
-                          if (confirm("Are you sure to delete this product?")) {
-                            try {
-                              await axiosInstance.delete(`/products/${p._id}`);
-                              toast.success("Deleted");
-                              fetchProducts();
-                            } catch {
-                              toast.error("Delete failed");
-                            }
-                          }
-                        }}
-                      >
+                        onClick={() => confirmDeleteProduct(p._id)}
+                        >
                         Delete
-                      </button>
+                        </button>
+
                     </div>
 
                     <form
@@ -227,6 +240,34 @@ export default function VendorDashboard() {
           </div>
         </div>
       )}
+     {showDeleteModal && (
+  <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/50 backdrop-blur-sm">
+    <div className="bg-white rounded-lg shadow-xl border p-6 w-full max-w-sm z-50">
+      <h2 className="text-lg font-semibold mb-4">Confirm Deletion</h2>
+      <p className="mb-4">Are you sure you want to delete this product?</p>
+      <div className="flex justify-end gap-2">
+        <button
+          className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+          onClick={() => {
+            setShowDeleteModal(false);
+            setProductToDelete(null);
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          onClick={handleDeleteConfirmed}
+        >
+          Delete
+        </button>
+      </div>
     </div>
+  </div>
+)}
+
+
+    </div>
+    
   );
 }
