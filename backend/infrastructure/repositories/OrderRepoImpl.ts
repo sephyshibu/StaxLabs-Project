@@ -6,6 +6,7 @@ import { IOrder } from '../../domain/model/IOrder';
 
 export class OrderRepositoryImpl implements IOrderRepository {
   async createOrder(data: IOrder): Promise<IOrder> {
+    const timezone=data?.timezone||'UTC'
     return await OrderModel.create(data);
   }
 

@@ -12,8 +12,8 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     try {
-      const { email, password } = req.body;
-      const { user, accessToken, refreshToken } = await this.loginUser.login(email, password);
+      const { email, password,timezone } = req.body;
+      const { user, accessToken, refreshToken } = await this.loginUser.login(email, password,timezone);
 
       // res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'lax' });
       console.log("refresh token", refreshToken)
@@ -28,8 +28,8 @@ export class AuthController {
 
   async signup(req: Request, res: Response) {
     try {
-      const { name, email, password, role } = req.body;
-      const user = await this.signupUser.signup(name, email, password, role);
+      const { name, email, password, role,timezone } = req.body;
+      const user = await this.signupUser.signup(name, email, password, role,timezone);
       res.status(201).json(user);
     } catch (err: any) {
       res.status(400).json({ message: err.message });

@@ -19,7 +19,8 @@ const OrderSchema = new Schema<IOrder>(
       enum: ['Pending', 'Accepted', 'Rejected', 'Shipped', 'Delivered'],
       default: 'Pending',
     },
-    createdAt: { type: Date, default: Date.now },
+     createdAt: { type: Date, default: () => new Date() },  // UTC timestamp
+      timezone: { type: String, required: true },            // <-- store user timezone
   },
   { timestamps: true }
 );

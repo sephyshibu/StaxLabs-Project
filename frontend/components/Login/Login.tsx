@@ -11,8 +11,9 @@ export default function Login() {
   const dispatch = useDispatch();
 
   const handleLogin = async () => {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
-      const res = await API.post('/auth/login', { email, password });
+      const res = await API.post('/auth/login', { email, password ,timezone});
       const { accessToken, user } = res.data;
       localStorage.setItem("email",email)
       dispatch(setCredentials({ token: accessToken, role: res.data.user.role ,  id: res.data.user._id, }));

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { JwtPayload,TokenExpiredError  } from 'jsonwebtoken';
 
 interface ExtendedRequest extends Request {
   user?: {
@@ -41,7 +41,11 @@ export const authenticateJWT = (
     next();
   } catch (err) {
     console.log("🚫 Token verification failed:", err);
-   res.status(403).json({ message: 'Forbidden: Invalid or expired token' });
-   return
+    if (err instanceof TokenExpiredError) { // Check if the error is specifically TokenExpiredError
+      res.status(401).json({ message: 'Unauthorized: Token expired' }); // Return 401
+    } else {
+      res.status(403).json({ message: 'Forbidden: Invalid token' }); // For other token verification errors
+    }
+    return;
   }
 };

@@ -5,7 +5,7 @@ import { generateAccessToken, generateRefreshToken } from '../../../infrastructu
 export class LoginUser {
   constructor(private readonly userRepo: IUserRepository) {}
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string,timezone:string) {
     const user = await this.userRepo.findByEmail(email);
     if (!user || !user.password) throw new Error('Invalid credentials');
 

@@ -7,5 +7,6 @@ const userSchema = new mongoose.Schema<IUser>({
   email: { type: String, unique: true },
   password: String,
   role: { type: String, enum: ['admin', 'vendor', 'customer'] },
+  timezone: String,
 });
 export const UserModel= mongoose.model<IUser>('User', userSchema);
