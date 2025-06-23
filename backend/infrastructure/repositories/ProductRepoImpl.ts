@@ -40,4 +40,12 @@ export class ProductRepositoryImpl implements IProductRepository {
     product.customPricing.set(customerId, price);
     await product.save();
   }
+
+   async findByIdAndVendor(productId: string, vendorId: string) {
+    return ProductModel.findOne({ _id: productId, vendorId });
+  }
+
+  async updateProduct(productId: string, updatedFields: any) {
+    return ProductModel.findByIdAndUpdate(productId, updatedFields, { new: true });
+  }
 }

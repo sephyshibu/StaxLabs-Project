@@ -46,7 +46,7 @@ productrouter.get('/', async (req, res) =>{
 productrouter.get('/:vendorId', async (req, res) =>{
   await productcontroller.getvendorproduct(req, res)
 });
-productrouter.put('/:id', roleGuard(['vendor']), async(req, res) =>{
+productrouter.patch('/:id', roleGuard(['vendor']), async(req, res) =>{
   await productcontroller.updateProduct(req, res)
 });
 

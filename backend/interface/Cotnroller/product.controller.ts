@@ -30,13 +30,22 @@ export class ProductController{
 
   async updateProduct(req: ExtendedRequest, res: Response) {
     if (!req.user) return res.sendStatus(403);
-    const updated = await this._updateproduct.updateproduct(
-      req.params.id,
-      req.user.id,
-      req.body
-    );
-    res.status(updated ? 200 : 404).json(updated);
+   try {
+      const productId = req.params.id;
+      const vendorId = req.user.id;
+      const updateData = req.body;
+
+      const updated = await this._updateproduct.updateproduct(productId, vendorId, updateData);
+
+      if (!updated) return res.status(404).json({ message: 'Product not found or not authorized' });
+
+      res.status(200).json(updated);
+    } catch (err) {
+      console.error('Error updating product:', err);
+      res.status(500).json({ message: 'Server error' });
+    }
   }
+  
 
   async deleteProduct(req: ExtendedRequest, res: Response) {
     if (!req.user) return res.sendStatus(403);
