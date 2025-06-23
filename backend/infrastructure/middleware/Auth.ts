@@ -16,6 +16,7 @@ export const authenticateJWT = (
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
   const userIdHeader = req.headers['x-user-id'];
+  console.log("token ",token)
 
   if (!token) {
     console.log("🚫 No token found in Authorization header.");
