@@ -1,25 +1,29 @@
 import { useEffect, useState, Fragment } from 'react';
 import axiosInstance from '../../components/Axios/axios';
-import { Dialog, Transition, Tab } from '@headlessui/react';
-import { PlusIcon } from '@heroicons/react/24/solid';
+import { Tab } from '@headlessui/react';
+import { PlusIcon, XMarkIcon } from '@heroicons/react/24/solid';
 import { useDispatch } from 'react-redux';
-import { clearCredentials } from '../../components/features/AuthSlice'; // update path if needed
-import { persistor } from '../../components/app/store'; // adjust path if needed
+import { clearCredentials } from '../../components/features/AuthSlice';
+import { persistor } from '../../components/app/store';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import IncomingOrders from './VendorOrders';
-
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
 export default function VendorDashboard() {
-      const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const vendorId = localStorage.getItem('userId');
+
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingProductId, setEditingProductId] = useState<string | null>(null);
+
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -27,12 +31,6 @@ export default function VendorDashboard() {
     minOrderQty: '',
     availableQty: '',
   });
-  const handleLogout = async () => {
-    localStorage.removeItem('userId');
-    dispatch(clearCredentials());
-    await persistor.purge(); // clear redux-persist data
-    navigate('/login');
-  };
 
   const fetchProducts = async () => {
     const res = await axiosInstance.get(`/products/${vendorId}`);
@@ -49,34 +47,67 @@ export default function VendorDashboard() {
     fetchOrders();
   }, []);
 
-  const handleOrderAction = async (orderId: string, action: 'accept' | 'reject') => {
-    await axiosInstance.patch(`/orders/${orderId}/${action}`);
-    fetchOrders();
+  const handleLogout = async () => {
+    localStorage.removeItem('userId');
+    dispatch(clearCredentials());
+    await persistor.purge();
+    navigate('/login');
   };
 
-  const handleAddProduct = async () => {
-    await axiosInstance.post('/products', form);
-    setIsModalOpen(false);
-    fetchProducts();
+  const openAddModal = () => {
+    setForm({ title: '', description: '', pricePerUnit: '', minOrderQty: '', availableQty: '' });
+    setIsEditMode(false);
+    setEditingProductId(null);
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (product: any) => {
+    setForm({
+      title: product.title,
+      description: product.description,
+      pricePerUnit: product.pricePerUnit,
+      minOrderQty: product.minOrderQty,
+      availableQty: product.availableQty,
+    });
+    setIsEditMode(true);
+    setEditingProductId(product._id);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmitProduct = async () => {
+    try {
+      if (isEditMode && editingProductId) {
+        await axiosInstance.patch(`/products/${editingProductId}`, form);
+        toast.success("Product updated");
+      } else {
+        await axiosInstance.post('/products', form);
+        toast.success("Product added");
+      }
+      setIsModalOpen(false);
+      setIsEditMode(false);
+      setEditingProductId(null);
+      setForm({ title: '', description: '', pricePerUnit: '', minOrderQty: '', availableQty: '' });
+      fetchProducts();
+    } catch {
+      toast.error(isEditMode ? "Update failed" : "Add failed");
+    }
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+    <div className="max-w-5xl mx-auto p-4 relative">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Vendor Dashboard</h1>
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-1"
-          onClick={() => setIsModalOpen(true)}
-        >
-          <PlusIcon className="w-4 h-4" /> Add Product
-        </button>
-        <button
-            className="bg-red-600 text-white px-4 py-2 rounded"
-            onClick={handleLogout}
-            >
+        <div className="flex gap-2">
+          <button
+            className="bg-green-600 text-white px-4 py-2 rounded flex items-center gap-1"
+            onClick={openAddModal}
+          >
+            <PlusIcon className="w-4 h-4" /> Add Product
+          </button>
+          <button className="bg-red-600 text-white px-4 py-2 rounded" onClick={handleLogout}>
             Logout
-            </button>
-
+          </button>
+        </div>
       </div>
 
       <Tab.Group>
@@ -99,15 +130,70 @@ export default function VendorDashboard() {
           <Tab.Panel>
             <ul className="space-y-3">
               {products.map((p: any) => (
-                <li
-                  key={p._id}
-                  className="border p-4 rounded shadow-sm flex justify-between"
-                >
+                <li key={p._id} className="border p-4 rounded shadow-sm">
                   <div>
                     <h2 className="text-lg font-semibold">{p.title}</h2>
-                    <p>{p.description}</p>
-                    <p>Price: ${p.pricePerUnit}</p>
+                    <p>Price: ₹{p.pricePerUnit}</p>
                     <p>Available: {p.availableQty}</p>
+
+                    <div className="flex gap-2 mt-2">
+                      <button
+                        className="bg-yellow-500 text-white px-2 py-1 rounded"
+                        onClick={() => openEditModal(p)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="bg-red-500 text-white px-2 py-1 rounded"
+                        onClick={async () => {
+                          if (confirm("Are you sure to delete this product?")) {
+                            try {
+                              await axiosInstance.delete(`/products/${p._id}`);
+                              toast.success("Deleted");
+                              fetchProducts();
+                            } catch {
+                              toast.error("Delete failed");
+                            }
+                          }
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+
+                    <form
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        const email = e.currentTarget.email.value;
+                        const price = e.currentTarget.price.value;
+                        try {
+                          await axiosInstance.patch(`/products/${p._id}/custom-pricing`, {
+                            email,
+                            price,
+                          });
+                          toast.success('Custom pricing updated');
+                          fetchProducts();
+                        } catch {
+                          toast.error('Failed to update');
+                        }
+                      }}
+                      className="mt-3 space-y-2"
+                    >
+                      <input name="email" required className="border p-1 w-full" placeholder="Customer email" />
+                      <input name="price" type="number" required className="border p-1 w-full" placeholder="Custom price" />
+                      <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Set Custom Price</button>
+                    </form>
+
+                    {Object.entries(p.customPricing || {}).length > 0 && (
+                      <div className="mt-2">
+                        <h4 className="text-sm font-semibold">Custom Prices:</h4>
+                        <ul className="text-sm ml-4 list-disc">
+                          {Object.entries(p.customPricing).map(([email, price]) => (
+                            <li key={email}>{email}: ₹{price as any}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
@@ -115,82 +201,32 @@ export default function VendorDashboard() {
           </Tab.Panel>
           <Tab.Panel>
             <IncomingOrders />
-        </Tab.Panel>
+          </Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
 
-      <Transition appear show={isModalOpen} as={Fragment}>
-        <Dialog as="div" className="relative z-10" onClose={() => setIsModalOpen(false)}>
-          <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 overflow-y-auto">
-            <div className="flex min-h-full items-center justify-center p-4 text-center">
-              <Transition.Child
-                as={Fragment}
-                enter="ease-out duration-300"
-                enterFrom="opacity-0 scale-95"
-                enterTo="opacity-100 scale-100"
-                leave="ease-in duration-200"
-                leaveFrom="opacity-100 scale-100"
-                leaveTo="opacity-0 scale-95"
-              >
-                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                    Add Product
-                  </Dialog.Title>
-                  <div className="mt-2 space-y-3">
-                    <input
-                      className="w-full border p-2 rounded"
-                      placeholder="Title"
-                      onChange={(e) => setForm({ ...form, title: e.target.value })}
-                    />
-                    <textarea
-                      className="w-full border p-2 rounded"
-                      placeholder="Description"
-                      onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    />
-                    <input
-                      className="w-full border p-2 rounded"
-                      placeholder="Price"
-                      onChange={(e) => setForm({ ...form, pricePerUnit: e.target.value })}
-                    />
-                    <input
-                      className="w-full border p-2 rounded"
-                      placeholder="Minimum Order Qty"
-                      onChange={(e) => setForm({ ...form, minOrderQty: e.target.value })}
-                    />
-                    <input
-                      className="w-full border p-2 rounded"
-                      placeholder="Available Qty"
-                      onChange={(e) => setForm({ ...form, availableQty: e.target.value })}
-                    />
-                  </div>
-
-                  <div className="mt-4">
-                    <button
-                      type="button"
-                      className="inline-flex justify-center rounded bg-blue-500 px-4 py-2 text-sm font-medium text-white hover:bg-blue-600"
-                      onClick={handleAddProduct}
-                    >
-                      Save
-                    </button>
-                  </div>
-                </Dialog.Panel>
-              </Transition.Child>
-            </div>
+      {isModalOpen && (
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-50 bg-white border shadow-lg rounded p-6 w-full max-w-md">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-lg font-semibold">{isEditMode ? 'Edit Product' : 'Add Product'}</h3>
+            <button onClick={() => setIsModalOpen(false)}>
+              <XMarkIcon className="h-5 w-5 text-gray-500" />
+            </button>
           </div>
-        </Dialog>
-      </Transition>
+          <div className="space-y-3">
+            <input className="w-full border p-2 rounded" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            <textarea className="w-full border p-2 rounded" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <input className="w-full border p-2 rounded" placeholder="Price" value={form.pricePerUnit} onChange={(e) => setForm({ ...form, pricePerUnit: e.target.value })} />
+            <input className="w-full border p-2 rounded" placeholder="Minimum Order Qty" value={form.minOrderQty} onChange={(e) => setForm({ ...form, minOrderQty: e.target.value })} />
+            <input className="w-full border p-2 rounded" placeholder="Available Qty" value={form.availableQty} onChange={(e) => setForm({ ...form, availableQty: e.target.value })} />
+          </div>
+          <div className="mt-4 text-right">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSubmitProduct}>
+              {isEditMode ? 'Update' : 'Add'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

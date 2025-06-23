@@ -14,6 +14,7 @@ export default function Login() {
     try {
       const res = await API.post('/auth/login', { email, password });
       const { accessToken, user } = res.data;
+      localStorage.setItem("email",email)
       dispatch(setCredentials({ token: accessToken, role: res.data.user.role ,  id: res.data.user._id, }));
      
     if (user.role === 'vendor') {

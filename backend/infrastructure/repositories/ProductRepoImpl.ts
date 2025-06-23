@@ -30,4 +30,14 @@ export class ProductRepositoryImpl implements IProductRepository {
       return result
 
   }
+    async findById(productId: string) {
+    return await ProductModel.findById(productId);
+  }
+
+  async setCustomPrice(productId: string, customerId: string, price: number): Promise<void> {
+    const product = await ProductModel.findById(productId);
+    if (!product) throw new Error('Product not found');
+    product.customPricing.set(customerId, price);
+    await product.save();
+  }
 }

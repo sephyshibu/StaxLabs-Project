@@ -7,7 +7,7 @@ import { DeleteProductUseCase } from '../../application/usecase/Product/DeletePr
 import { UpdateProductUseCase } from '../../application/usecase/Product/UpdateProduct';
 import { GetAllProductProductUseCase } from '../../application/usecase/Product/GetAllProduct';
 import { GetVendorProductProductUseCase } from '../../application/usecase/Product/GetVendorproduct';
-
+import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
 export class ProductController{
 
     constructor(
@@ -15,8 +15,9 @@ export class ProductController{
         private _deleteproduct:DeleteProductUseCase,
         private _updateproduct:UpdateProductUseCase,
         private _getallproduct:GetAllProductProductUseCase,
-        private _getvendorproduct:GetVendorProductProductUseCase
-    ){}
+        private _getvendorproduct:GetVendorProductProductUseCase,
+        private _setcustomprice:SetCustomPriceUseCase
+      ){}
 
      async createProduct(req: ExtendedRequest, res: Response) {
     if (!req.user) return res.sendStatus(403);
@@ -60,6 +61,36 @@ export class ProductController{
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 }
+// async setCustomPriceForCustomer(req: Request, res: Response) {
+//     const { productId } = req.params;
+//     const { customerId, customPrice } = req.body;
+
+//     try {
+//       await this._setcustomprice.execute(productId, customerId, customPrice);
+//       res.status(200).json({ message: 'Custom price set successfully' });
+//     } catch (err: any) {
+//       res.status(400).json({ error: err.message });
+//     }
+//   }
+
+async setCustomPrice(req: ExtendedRequest, res: Response) {
+  const vendorId = req.user?.id;
+  const productId = req.params.id;
+  const { email, price } = req.body;
+
+  if (!email || !price) return res.status(400).json({ error: 'Missing email or price' });
+
+  const product = await ProductModel.findOne({ _id: productId, vendorId });
+  if (!product) return res.status(404).json({ error: 'Product not found' });
+  const safeEmail = email.replace(/\./g, '%2E');
+
+
+  product.customPricing.set(safeEmail, price);
+  await product.save();
+
+  res.json({ message: 'Custom pricing updated', product });
+}
+
 
 }
 

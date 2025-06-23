@@ -8,6 +8,10 @@ import { DeleteProductUseCase } from '../../application/usecase/Product/DeletePr
 import { UpdateProductUseCase } from '../../application/usecase/Product/UpdateProduct';
 import { GetAllProductProductUseCase } from '../../application/usecase/Product/GetAllProduct';
 import { GetVendorProductProductUseCase } from '../../application/usecase/Product/GetVendorproduct';
+import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
+
+
+
 import { ProductRepositoryImpl } from '../../infrastructure/repositories/ProductRepoImpl';
 
 const productrouter = express.Router();
@@ -20,13 +24,14 @@ const deletingproduct= new DeleteProductUseCase(productrepository)
 const updateingproduct= new UpdateProductUseCase(productrepository)
 const getallproduct= new GetAllProductProductUseCase(productrepository)
 const vendorproducts= new GetVendorProductProductUseCase(productrepository)
-
+const setcustomprice=new SetCustomPriceUseCase(productrepository)
 const productcontroller= new ProductController(
     createproduct,
     deletingproduct,
     updateingproduct,
     getallproduct,
-    vendorproducts
+    vendorproducts,
+    setcustomprice
 )
 
 productrouter.post('/', roleGuard(['vendor']), async (req, res) => {
@@ -48,5 +53,11 @@ productrouter.put('/:id', roleGuard(['vendor']), async(req, res) =>{
 productrouter.delete('/:id', roleGuard(['vendor']), async(req, res) =>{
   await productcontroller.deleteProduct(req, res)
 });
+
+
+productrouter.patch('/:id/custom-pricing', roleGuard(['vendor']), async (req, res) => {
+  await productcontroller.setCustomPrice(req, res);
+});
+
 
 export default productrouter;

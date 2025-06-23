@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { IProduct } from '../../domain/model/IProduct';
 
+
+
 const productSchema = new mongoose.Schema<IProduct>({
   title: String,
   description: String,

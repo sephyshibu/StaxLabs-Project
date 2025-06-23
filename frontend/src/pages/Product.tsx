@@ -10,6 +10,7 @@ interface Product {
   minOrderQty: number;
   availableQty: number;
   vendorId: string;
+  customPricing?: Record<string, number>; // <-- add this
 }
 
 interface CartItem {
@@ -108,7 +109,15 @@ export default function Products() {
             <p>{p.description}</p>
             <p className="text-sm text-gray-600">Min Qty: {p.minOrderQty}</p>
             <p className="text-sm text-gray-600">Available: {p.availableQty}</p>
-            <p className="text-green-600 font-bold">₹{p.pricePerUnit}/unit</p>
+            <p className="text-green-600 font-bold">
+            ₹
+            {(() => {
+              const userEmail = localStorage.getItem('email'); // get user's email
+              const encodedEmail = userEmail?.replace(/\./g, '%2E') ?? '';
+              return p.customPricing?.[encodedEmail] ?? p.pricePerUnit;
+            })()}
+            /unit
+          </p>
 
             <input
               type="number"
