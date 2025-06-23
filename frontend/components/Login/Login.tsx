@@ -22,7 +22,7 @@ export default function Login() {
     } else if (user.role === 'customer') {
       navigate('/'); // customer to home
     } else if (user.role === 'admin') {
-      navigate('/admin'); // if needed
+      navigate('/admin/dashboard'); // if needed
     }
   } catch (err: any) {
     console.error('Login failed:', err);

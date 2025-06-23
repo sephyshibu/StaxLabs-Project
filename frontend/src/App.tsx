@@ -7,6 +7,7 @@ import Products from './pages/Product';
 import VendorOrders from './pages/VendorOrders';
 import CustomerOrderForm from './pages/CustomerOrderForm';
 import VendorDashboard from './pages/VendorDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import { ToastContainer } from 'react-toastify';
 function App() {
   const { token, role } = useSelector((state: RootState) => state.auth);
@@ -36,6 +37,18 @@ function App() {
             )
           }
         />
+        <Route
+        path="/admin/dashboard"
+        element={
+          !token ? (
+            <Navigate to="/login" />
+          ) : role !== 'admin' ? (
+            <Navigate to="/" />
+          ) : (
+            <AdminDashboard />
+          )
+        }
+      />
 
         {/* Vendor-only route */}
         <Route
