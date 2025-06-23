@@ -20,6 +20,7 @@ const OrderSchema = new Schema<IOrder>(
       default: 'Pending',
     },
      createdAt: { type: Date, default: () => new Date() },  // UTC timestamp
+      updatedAt: { type: Date, default: () => new Date() },  // UTC timestamp
       timezone: { type: String, required: true },            // <-- store user timezone
   },
   { timestamps: true }

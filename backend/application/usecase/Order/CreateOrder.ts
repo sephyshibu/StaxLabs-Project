@@ -17,7 +17,7 @@ export class CreateOrder {
     private cartRepo: ICartRepository
   ) {}
 
-  async execute(customerId: string, items: CartItem[]) {
+  async execute(customerId: string, items: CartItem[], timezone:string) {
     const grouped = new Map<string, CartItem[]>();
 
     // 🔁 Group items by vendor
@@ -38,6 +38,7 @@ export class CreateOrder {
         totalCost,
         status: 'Pending',
         createdAt: new Date(),
+         timezone, // 🕒 add this
       };
 
       const order = await this.orderRepo.createOrder(orderData);

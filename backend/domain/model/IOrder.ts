@@ -12,5 +12,6 @@ export interface IOrder {
   totalCost: number;
   status: 'Pending' | 'Accepted' | 'Rejected' | 'Shipped' | 'Delivered';
   createdAt?: Date;
+    updatedAt?: Date;   // 
     timezone?:string
 }

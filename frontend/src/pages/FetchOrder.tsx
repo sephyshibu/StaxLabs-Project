@@ -1,17 +1,31 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '../../components/Axios/axios';
 import { toast } from 'react-toastify';
+import moment from 'moment-timezone'
 
 export default function FetchOrders() {
   const [orders, setOrders] = useState([]);
+  const [userTimezone, setUserTimezone] = useState('UTC');
 
   const fetchOrders = async () => {
     try {
       const res = await axiosInstance.get('/orders');
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      setUserTimezone(timezone);
+
+      const formattedOrders = res.data.map((order: any) => ({
+        ...order,
+        createdAt: formatTime(order.createdAt, order.timezone || timezone),
+        updatedAt: formatTime(order.updatedAt, order.timezone || timezone),
+      }));
+
       setOrders(res.data);
     } catch (err) {
       toast.error("Failed to fetch orders");
     }
+  };
+    const formatTime = (time: string, timezone: string) => {
+    return moment.tz(time, timezone).format('YYYY-MM-DD hh:mm A z');
   };
 
   useEffect(() => {
@@ -30,6 +44,8 @@ export default function FetchOrders() {
               <strong>Customer:</strong> {order.customerId?.name || 'N/A'} <br />
               <strong>Status:</strong> {order.status} <br />
               <strong>Total:</strong> ₹{order.totalCost}
+               <strong>Created At:</strong> {order.createdAt} <br />
+              <strong>Updated At:</strong> {order.updatedAt}
             </div>
             <div className="mt-2">
               <h4 className="text-sm font-semibold mb-1">Items:</h4>

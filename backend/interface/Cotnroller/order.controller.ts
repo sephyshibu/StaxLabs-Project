@@ -8,6 +8,7 @@ import { AddToCartUseCase } from '../../application/usecase/Cart/AddCart';
 import { GetCartUseCase } from '../../application/usecase/Cart/GetCart';
 import { RemoveItemFromCartUseCase } from '../../application/usecase/Cart/Removeitem';
 import { GetAllOrders } from '../../application/usecase/Order/GetAllOrders';
+import { formatToUserTimezone } from '../../utils/TimeFormatter';
 
 export class OrderController {
   constructor(
@@ -24,14 +25,25 @@ export class OrderController {
       if (!req.user) return res.sendStatus(403);
     const { items } = req.body;
     const customerId = req.user.id;
-    const order = await this.createOrder.execute(customerId, items);
-    res.status(201).json(order);
+    const timezone = req.user.timezone || 'UTC'; // 🕒 get from authenticated user
+    const order = await this.createOrder.execute(customerId, items,timezone);
+   res.status(201).json(order.map(o => ({
+  ...o,
+  createdAt: formatToUserTimezone(o.createdAt!, o.timezone || 'UTC'),
+})));
   }
 
 
   async getallordersinadmin(req:Request,res:Response){
     const orders=await this.getallorders.execute()
-    res.json(orders)
+    res.json(orders.map(order => {
+  const tz = order.timezone || 'UTC';
+  return {
+    ...order,
+    createdAt: formatToUserTimezone(order.createdAt!, tz),
+    updatedAt: formatToUserTimezone(order.updatedAt!, tz), // ✅ add this line
+  }}));
+
   }
 
 

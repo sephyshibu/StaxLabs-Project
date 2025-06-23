@@ -11,11 +11,12 @@ export class OrderRepositoryImpl implements IOrderRepository {
   }
 
 async getAllOrders(): Promise<IOrder[]> {
-  return await OrderModel.find()
+  const orders= await OrderModel.find()
     .populate('vendorId', 'name') // fetch vendor name only
     .populate('customerId', 'name') // fetch customer name only
     .populate('items.productId', 'title pricePerUnit'); // fetch product name & price
-}
+    return orders.map(order => order.toObject()); // ✅ convert to plain object
+  }
 
   async getOrdersByVendor(vendorId: string): Promise<IOrder[]> {
     return await OrderModel.find({ vendorId })

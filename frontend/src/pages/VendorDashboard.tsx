@@ -25,6 +25,9 @@ export default function VendorDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
+  const [error, setError] = useState<Record<string, string>>({});
+
+ const [loading, setloading]=useState(false);
 
   const [form, setForm] = useState({
     title: '',
@@ -77,6 +80,58 @@ export default function VendorDashboard() {
   };
 
   const handleSubmitProduct = async () => {
+   
+   setError({});
+  setloading(true);
+
+  let formErrors: Record<string, string> = {};
+  let isValid = true;
+
+  if (!form.title.trim()) {
+    formErrors.title = "Title is required";
+    isValid = false;
+  } else if (!/^[A-Za-z ]+$/.test(form.title)) {
+    formErrors.title = "Title must only contain letters and spaces.";
+    isValid = false;
+  }
+
+  if (!form.description.trim()) {
+    formErrors.description = "Description is required";
+    isValid = false;
+  }
+
+  if (!form.pricePerUnit.trim()) {
+    formErrors.pricePerUnit = "Price is required";
+    isValid = false;
+  } else if (isNaN(Number(form.pricePerUnit))) {
+    formErrors.pricePerUnit = "Price must be a number";
+    isValid = false;
+  }
+
+  if (!form.minOrderQty.trim()) {
+    formErrors.minOrderQty = "Minimum quantity is required";
+    isValid = false;
+  } else if (isNaN(Number(form.minOrderQty))) {
+    formErrors.minOrderQty = "Minimum quantity must be a number";
+    isValid = false;
+  }
+
+  if (!form.availableQty.trim()) {
+    formErrors.availableQty = "Available quantity is required";
+    isValid = false;
+  } else if (isNaN(Number(form.availableQty))) {
+    formErrors.availableQty = "Available quantity must be a number";
+    isValid = false;
+  }
+
+  setError(formErrors);
+
+  if (!isValid) {
+    setloading(false);
+    return;
+  }
+
+
     try {
       if (isEditMode && editingProductId) {
         await axiosInstance.patch(`/products/${editingProductId}`, form);
@@ -90,8 +145,9 @@ export default function VendorDashboard() {
       setEditingProductId(null);
       setForm({ title: '', description: '', pricePerUnit: '', minOrderQty: '', availableQty: '' });
       fetchProducts();
-    } catch {
+    } catch(err:any) {
       toast.error(isEditMode ? "Update failed" : "Add failed");
+       setError(err.response?.data?.message ||"Something went wrong")   
     }
   };
   const confirmDeleteProduct = (productId: string) => {
@@ -228,10 +284,20 @@ const handleDeleteConfirmed = async () => {
           </div>
           <div className="space-y-3">
             <input className="w-full border p-2 rounded" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+            {error.title && <p className="text-red-500 text-sm">{error.title}</p>}
+
             <textarea className="w-full border p-2 rounded" placeholder="Description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            {error.description && <p className="text-red-500 text-sm">{error.description}</p>}
+
             <input className="w-full border p-2 rounded" placeholder="Price" value={form.pricePerUnit} onChange={(e) => setForm({ ...form, pricePerUnit: e.target.value })} />
+            {error.pricePerUnit && <p className="text-red-500 text-sm">{error.pricePerUnit}</p>}
+
             <input className="w-full border p-2 rounded" placeholder="Minimum Order Qty" value={form.minOrderQty} onChange={(e) => setForm({ ...form, minOrderQty: e.target.value })} />
+            {error.minOrderQty && <p className="text-red-500 text-sm">{error.minOrderQty}</p>}
+
             <input className="w-full border p-2 rounded" placeholder="Available Qty" value={form.availableQty} onChange={(e) => setForm({ ...form, availableQty: e.target.value })} />
+           {error.availableQty && <p className="text-red-500 text-sm">{error.availableQty}</p>}
+
           </div>
           <div className="mt-4 text-right">
             <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleSubmitProduct}>
