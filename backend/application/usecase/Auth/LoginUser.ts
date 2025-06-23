@@ -7,10 +7,15 @@ export class LoginUser {
 
   async login(email: string, password: string,timezone:string) {
     const user = await this.userRepo.findByEmail(email);
-    if (!user || !user.password) throw new Error('Invalid credentials');
+    if(!user){
+            throw new Error("User Not found")
+        }
+    if (!user.password) {
+            throw new Error("password Not found")
+          }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) throw new Error('Invalid credentials');
+    if (!isMatch)  throw new Error("Invalid password")
 
     const payload = { id: user.id, role: user.role };
     const accessToken = generateAccessToken(payload);

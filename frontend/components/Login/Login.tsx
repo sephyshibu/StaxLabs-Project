@@ -7,11 +7,39 @@ import API from '../Axios/axios';
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const[error,seterror]=useState<string |null>(null)
+ const [loading, setloading]=useState(false);
+  
+
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  
+
   const handleLogin = async () => {
     const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+     seterror(null)
+    setloading(true)
+
+     if(!email && !password){
+            seterror("email and password is required")
+            setloading(false)
+            return
+        }
+
+        if(!email){
+            seterror("Email is required")
+            setloading(false)
+            return
+        }
+        if(!password){
+            seterror("password is required")
+            setloading(false)
+            return
+        }
+        
+
     try {
       const res = await API.post('/auth/login', { email, password ,timezone});
       const { accessToken, user } = res.data;
@@ -27,7 +55,11 @@ export default function Login() {
     }
   } catch (err: any) {
     console.error('Login failed:', err);
+     seterror(err.response?.data?.message ||"Something went wrong")   
   }
+  finally {
+            setloading(false);
+          }
   };
 
   return (
@@ -46,8 +78,9 @@ export default function Login() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
+      {error && <p className="text-red-500 text-center text-sm">{error}</p>}
       <button className="w-full bg-blue-500 text-white py-2 rounded" onClick={handleLogin}>
-        Login
+        {loading ? "Logging in..." : "LOGIN"}
       </button>
       <p>Dont have account? <a href='/register'>SignUp</a></p>
     </div>
