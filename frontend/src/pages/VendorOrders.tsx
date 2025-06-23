@@ -14,7 +14,7 @@ export default function IncomingOrders() {
     }
   };
 
-  const handleOrderAction = async (orderId: string, action: 'accept' | 'reject') => {
+  const handleOrderAction = async (orderId: string, action: 'accept' | 'reject' | 'shipped' | 'delivered') => {
     try {
       await axiosInstance.patch(`/orders/${orderId}/${action}`);
       toast.success(`Order ${action}ed`);
@@ -33,72 +33,61 @@ export default function IncomingOrders() {
   }
 
   return (
-    <ul className="space-y-3">
+  <ul className="space-y-4">
       {orders.map((o: any) => (
-        <li
-          key={o._id}
-          className="border p-4 rounded shadow-sm flex justify-between"
-        >
-          <div>
-            <h2 className="text-md font-semibold">
-              Customer: {o.customerId?.name || 'Unknown'}
-            </h2>
-            <p>
-              Status:{' '}
-              <span
-                className={`font-semibold ${
-                  o.status === 'Accepted'
-                    ? 'text-green-600'
-                    : o.status === 'Rejected'
-                    ? 'text-red-600'
-                    : 'text-yellow-600'
-                }`}
-              >
-                {o.status}
-              </span>
-            </p>
-            <p>Total: ₹{o.totalCost}</p>
-            <p>Ordered: {new Date(o.createdAt).toLocaleString()}</p>
+        <li key={o._id} className="p-4 border rounded shadow-sm">
+          <div className="flex justify-between">
+            <div>
+              <h2 className="font-semibold">Customer: {o.customerId?.name || 'Unknown'}</h2>
+              <p>Status: <span className="font-medium">{o.status}</span></p>
+              <p>Total: ₹{o.totalCost}</p>
+              <p>Ordered: {new Date(o.createdAt).toLocaleString()}</p>
 
-            <div className="mt-2">
-              <h3 className="font-medium">Items:</h3>
-              <ul className="list-disc ml-5 text-sm">
-                {o.items.map((item: any, i: number) => (
-                  <li key={i}>
-                    Product: {item.productId?.title || item.productId} — Qty: {item.quantity}
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-2">
+                <h4 className="font-medium">Items:</h4>
+                <ul className="list-disc ml-5 text-sm">
+                  {o.items.map((item: any, i: number) => (
+                    <li key={i}>
+                      {item.productId?.title || item.productId} — Qty: {item.quantity}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
-          </div>
 
-          <div className="space-x-2 self-start mt-2">
-            {o.status === 'Pending' ? (
-              <>
-                <button
-                  className="bg-green-600 text-white px-3 py-1 rounded"
-                  onClick={() => handleOrderAction(o._id, 'accept')}
+            <div className="flex flex-col justify-start gap-2">
+              {o.status === 'Pending' ? (
+                <>
+                  <button
+                    className="bg-green-600 text-white px-3 py-1 rounded"
+                    onClick={() => handleOrderAction(o._id, 'accept')}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="bg-red-600 text-white px-3 py-1 rounded"
+                    onClick={() => handleOrderAction(o._id, 'reject')}
+                  >
+                    Reject
+                  </button>
+                </>
+              ) : o.status === 'Accepted' ? (
+                <select
+                  className="border px-3 py-1 rounded"
+                  value=""
+                  onChange={(e) => {
+                    const nextStatus = e.target.value;
+                    if (nextStatus) handleOrderAction(o._id, nextStatus as 'shipped' | 'delivered');
+                  }}
                 >
-                  Accept
-                </button>
-                <button
-                  className="bg-red-600 text-white px-3 py-1 rounded"
-                  onClick={() => handleOrderAction(o._id, 'reject')}
-                >
-                  Reject
-                </button>
-              </>
-            ) : (
-              <span
-                className={`px-3 py-1 rounded font-medium ${
-                  o.status === 'Accepted'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-                }`}
-              >
-                {o.status}
-              </span>
-            )}
+                  <option value="" disabled>Update Status</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivered">Delivered</option>
+                </select>
+              ) : (
+                <span className="px-3 py-1 rounded bg-gray-200 text-gray-700">{o.status}</span>
+              )}
+            </div>
           </div>
         </li>
       ))}

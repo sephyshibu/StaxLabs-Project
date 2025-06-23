@@ -49,11 +49,10 @@ async updateStatus(req: ExtendedRequest, res: Response) {
   const orderId = req.params.id;
   const action = req.params.action.toLowerCase();
 
-  if (!['accept', 'reject'].includes(action)) {
-    return res.status(400).json({ error: 'Invalid action' });
-  }
-
-  const status = action === 'accept' ? 'Accepted' : 'Rejected';
+  if (!['accept', 'reject', 'shipped', 'delivered'].includes(action)) {
+  return res.status(400).json({ error: 'Invalid action' });
+}
+const status = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase();
 
   try {
     const updatedOrder = await this.updateOrderStatus.execute(orderId, vendorId, status);
