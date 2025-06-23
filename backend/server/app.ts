@@ -1,6 +1,7 @@
 import express ,{Application} from 'express'
 import cors from 'cors';
 import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
 import { authenticateJWT } from '../infrastructure/middleware/Auth';
 
 import authrouter from '../interface/Routes/auth.route';
@@ -25,6 +26,7 @@ export class App{
             credentials:true
         }))
         this.app.use(express.json())
+        this.app.use(cookieParser())
      
      
     }

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { LoginUser } from '../../application/usecase/Auth/LoginUser';
 import { SignupUser } from '../../application/usecase/Auth/Signupuser';
 import { RefreshToken } from '../../application/usecase/Auth/RefreshToken';
-
+import jwt from 'jsonwebtoken'
 export class AuthController {
   constructor(
     private loginUser: LoginUser,
@@ -16,7 +16,10 @@ export class AuthController {
       const { user, accessToken, refreshToken } = await this.loginUser.login(email, password);
 
       // res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'lax' });
-      res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax' });
+      console.log("refresh token", refreshToken)
+      console.log("accesstokjen",accessToken)
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, sameSite: 'lax',secure: false, // true if using HTTPS
+  path: '/api/auth' });
       res.status(200).json({ user, accessToken });
     } catch (err: any) {
       res.status(401).json({ message: err.message });
@@ -35,12 +38,22 @@ export class AuthController {
 
   async refresh(req: Request, res: Response) {
     try {
+      console.log("refeeh")
       const token = req.cookies.refreshToken;
+      console.log("token", token)
       const newAccessToken = await this.refreshTokenUseCase.refresh(token);
-      res.status(200).json({ accessToken: newAccessToken });
-    } catch (err: any) {
-      res.status(403).json({ message: err.message });
-    }
+      const decoded = jwt.decode(newAccessToken) as { id: string; role: string };
+
+    res.status(200).json({
+      accessToken: newAccessToken,
+      user: {
+        id: decoded.id,
+        role: decoded.role,
+      }
+    });
+  } catch (err: any) {
+    res.status(403).json({ message: err.message });
+  }
   }
 
   logout(_req: Request, res: Response) {

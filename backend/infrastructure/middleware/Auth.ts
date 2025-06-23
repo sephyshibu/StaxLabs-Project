@@ -8,42 +8,39 @@ interface ExtendedRequest extends Request {
   };
 }
 
-export const authenticateJWT = (req: ExtendedRequest, res: Response, next: NextFunction): void => {
-  const token = req.headers.authorization?.split(' ')[1];
+export const authenticateJWT = (
+  req: ExtendedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1];
   const userIdHeader = req.headers['x-user-id'];
 
   if (!token) {
-    res.sendStatus(401);
-    console.log("asd",1)
-    return;
+    console.log("🚫 No token found in Authorization header.");
+    res.status(401).json({ message: 'Unauthorized: No token provided' });
+    return
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
 
-    if (typeof decoded === 'string') {
-      console.log("asd",2)
-      res.sendStatus(403);
-      return;
-    }
-
-    const { id, role } = decoded as JwtPayload;
-
-    if (!id || !role) {
-      console.log("asd",3)
-      res.sendStatus(403);
-      return;
+    if (typeof decoded !== 'object' || !decoded.id || !decoded.role) {
+      console.log("🚫 Invalid token payload structure.");
+     res.status(403).json({ message: 'Forbidden: Invalid token' });
+     return
     }
 
     req.user = {
-      id: userIdHeader && typeof userIdHeader === 'string' ? userIdHeader : id,
-      role,
+      id: typeof userIdHeader === 'string' ? userIdHeader : decoded.id,
+      role: decoded.role as 'admin' | 'vendor' | 'customer',
     };
 
     next();
   } catch (err) {
-    console.log("asd",4)
-    res.sendStatus(403);
-    return;
+    console.log("🚫 Token verification failed:", err);
+   res.status(403).json({ message: 'Forbidden: Invalid or expired token' });
+   return
   }
 };

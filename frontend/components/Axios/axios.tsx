@@ -1,4 +1,3 @@
-// axios/axiosInstance.ts
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { store, persistor } from '../app/store';
 import { setCredentials, clearCredentials } from '../features/AuthSlice';
@@ -12,7 +11,11 @@ const axiosInstance = axios.create({
   baseURL: 'http://localhost:3000/api',
   withCredentials: true,
 });
+interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+    _retry?: boolean;
+  }
 
+// ✅ Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: CustomAxiosRequestConfig) => {
     const { token, role, id } = store.getState().auth;
@@ -26,29 +29,33 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
+// ✅ Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
+    console.log("Axios response error interceptor triggered:", error?.response?.status);
+    
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
+      console.log('401 error detected:', error.response); // ← MUST REACH HERE
       originalRequest._retry = true;
+
       try {
-        const response = await axios.post(
+        console.log('Triggering token refresh...');
+        const res = await axiosInstance.post<{ accessToken: string; user: { id: string; role: 'admin' | 'vendor' | 'customer' } }>(
           'http://localhost:3000/api/auth/refresh-token',
           {},
           { withCredentials: true }
         );
 
-        const { accessToken, user } = response.data;
+        const { accessToken, user } = res.data;
 
-        store.dispatch(
-          setCredentials({
-            token: accessToken,
-            role: user.role,
-            id: user.id,
-          })
-        );
+        store.dispatch(setCredentials({
+          token: accessToken,
+          role: user.role,
+          id: user.id,
+        }));
 
         axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
@@ -56,6 +63,7 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         toast.error('Session expired. Please login again.');
+        store.dispatch(clearCredentials());
         await persistor.purge();
         localStorage.removeItem('userId');
         window.location.href = '/login';
@@ -63,18 +71,12 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    if (error.response?.status === 403) {
-      const data = error.response.data as { message?: string; action?: string };
-      if (data?.action === 'blocked') {
-        toast.error(data.message || 'You are blocked by admin!');
-        localStorage.removeItem('userId');
-        await persistor.purge();
-        window.location.href = '/login';
-      }
-    }
+    // Fallback: 403, 500 etc.
+    console.log("Non-401 error handled:", error?.response?.status);
 
     return Promise.reject(error);
   }
 );
+
 
 export default axiosInstance;
