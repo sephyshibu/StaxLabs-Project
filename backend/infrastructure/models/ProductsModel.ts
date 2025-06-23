@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose ,{Schema}from 'mongoose';
 import { IProduct } from '../../domain/model/IProduct';
 
 
@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema<IProduct>({
   pricePerUnit: Number,
   minOrderQty: Number,
   availableQty: Number,
-  vendorId: mongoose.Types.ObjectId,
+  vendorId:  { type: Schema.Types.ObjectId, ref: 'User', required: true },
   customPricing: {
     type: Map,
     of: Number,

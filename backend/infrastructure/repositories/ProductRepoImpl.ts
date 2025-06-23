@@ -9,7 +9,7 @@ export class ProductRepositoryImpl implements IProductRepository {
   }
 
   async findAll(): Promise<IProduct[]> {
-    return await ProductModel.find();
+    return await ProductModel.find().populate('vendorId','name');
   }
 
   async update(id: string, vendorId: string, updateData: Partial<IProduct>): Promise<IProduct | null> {

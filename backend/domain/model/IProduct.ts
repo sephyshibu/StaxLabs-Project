@@ -5,6 +5,6 @@ export interface IProduct {
   pricePerUnit: number;
   minOrderQty: number;
   availableQty: number;
-  vendorId: string;
+  vendorId: Object;
   customPricing: Map<string, number>; // customerId -> price
 }

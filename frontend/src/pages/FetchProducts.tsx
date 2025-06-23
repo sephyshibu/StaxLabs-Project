@@ -26,6 +26,7 @@ export default function FetchProducts() {
           <li key={p._id} className="p-3 border rounded shadow-sm">
             <div className="font-medium">{p.title}</div>
             <div className="text-sm text-gray-600">₹{p.pricePerUnit} | Qty: {p.availableQty}</div>
+             <div className="text-sm text-gray-600">Vendor name: {p.vendorId.name} </div>
           </li>
         ))}
       </ul>
