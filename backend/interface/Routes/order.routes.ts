@@ -11,6 +11,8 @@ import { UpdateOrderStatus } from '../../application/usecase/Order/UpdateOrderSt
 import { AddToCartUseCase } from '../../application/usecase/Cart/AddCart';
 import { GetCartUseCase } from '../../application/usecase/Cart/GetCart';
 import { RemoveItemFromCartUseCase } from '../../application/usecase/Cart/Removeitem';
+import { GetAllOrders } from '../../application/usecase/Order/GetAllOrders';
+
 import { OrderController } from '../Cotnroller/order.controller';
 
 const orderrouter = express.Router();
@@ -24,7 +26,8 @@ const orderController = new OrderController(
   new UpdateOrderStatus(orderRepo),
   new AddToCartUseCase(cartRepo),
   new GetCartUseCase(cartRepo),
-  new RemoveItemFromCartUseCase(cartRepo)
+  new RemoveItemFromCartUseCase(cartRepo),
+  new GetAllOrders(orderRepo)
 );
 
 orderrouter.post('/', roleGuard(['customer']), async (req, res) => {
@@ -35,6 +38,10 @@ orderrouter.post('/', roleGuard(['customer']), async (req, res) => {
 orderrouter.get('/incoming', roleGuard(['vendor']), async(req, res) => {
     await orderController.getForVendor(req, res)
 });
+
+orderrouter.get('/', roleGuard(['admin']),async(req,res)=>{
+    await orderController.getallordersinadmin(req,res)
+})
 
 
 orderrouter.patch('/:id/:action', roleGuard(['vendor']), async(req, res) => {

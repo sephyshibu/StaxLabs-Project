@@ -7,7 +7,7 @@ import { ExtendedRequest } from '../../infrastructure/middleware/types/ExtendedR
 import { AddToCartUseCase } from '../../application/usecase/Cart/AddCart';
 import { GetCartUseCase } from '../../application/usecase/Cart/GetCart';
 import { RemoveItemFromCartUseCase } from '../../application/usecase/Cart/Removeitem';
-
+import { GetAllOrders } from '../../application/usecase/Order/GetAllOrders';
 
 export class OrderController {
   constructor(
@@ -16,7 +16,8 @@ export class OrderController {
     private updateOrderStatus: UpdateOrderStatus,
     private addcart:AddToCartUseCase,
     private getcart:GetCartUseCase,
-    private removeitemfromcart:RemoveItemFromCartUseCase
+    private removeitemfromcart:RemoveItemFromCartUseCase,
+    private getallorders:GetAllOrders
   ) {}
 
   async create(req: ExtendedRequest, res: Response) {
@@ -26,6 +27,13 @@ export class OrderController {
     const order = await this.createOrder.execute(customerId, items);
     res.status(201).json(order);
   }
+
+
+  async getallordersinadmin(req:Request,res:Response){
+    const orders=await this.getallorders.execute()
+    res.json(orders)
+  }
+
 
   async getForVendor(req: ExtendedRequest, res: Response) {
       if (!req.user) return res.sendStatus(403);
