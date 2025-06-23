@@ -34,14 +34,30 @@ export class OrderController {
     res.json(orders);
   }
 
-  async updateStatus(req: ExtendedRequest, res: Response) {
-      if (!req.user) return res.sendStatus(403);
-      console.log('update')
-    const vendorId = req.user.id;
-    const { status } = req.body;
-    const order = await this.updateOrderStatus.execute(req.params.id, vendorId, status);
-    res.json(order);
+async updateStatus(req: ExtendedRequest, res: Response) {
+  if (!req.user) return res.sendStatus(403);
+
+  const vendorId = req.user.id;
+  const orderId = req.params.id;
+  const action = req.params.action.toLowerCase();
+
+  if (!['accept', 'reject'].includes(action)) {
+    return res.status(400).json({ error: 'Invalid action' });
   }
+
+  const status = action === 'accept' ? 'Accepted' : 'Rejected';
+
+  try {
+    const updatedOrder = await this.updateOrderStatus.execute(orderId, vendorId, status);
+    if (!updatedOrder) {
+      return res.status(404).json({ error: 'Order not found or not yours' });
+    }
+    res.json(updatedOrder);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update order status' });
+  }
+}
+
 
     // ✅ New method for adding to cart
  async addToCart(req: ExtendedRequest, res: Response) {

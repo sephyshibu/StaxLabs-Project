@@ -37,8 +37,8 @@ orderrouter.get('/incoming', roleGuard(['vendor']), async(req, res) => {
 });
 
 
-orderrouter.patch('/:id/status', roleGuard(['vendor']), async(req, res) => {
-    await orderController.updateStatus(req, res)
+orderrouter.patch('/:id/:action', roleGuard(['vendor']), async(req, res) => {
+  await orderController.updateStatus(req, res);
 });
 
 orderrouter.patch('/cart', roleGuard(['customer']), async(req, res) => {
