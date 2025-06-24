@@ -13,7 +13,8 @@ interface Signupform{
 export default function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'customer' });
   const[loading,setloading]=useState(false)
-  const[error,seterror]=useState<Partial<Signupform>>({})
+  const [error, seterror] = useState<Partial<Signupform> & { backend?: string }>({});
+
   
   const navigate = useNavigate();
 
@@ -70,7 +71,11 @@ form
       navigate('/login');
     } catch (err: any) {
       console.error('Registration failed:', err);
-       seterror(err.response?.data?.message ||"Something went wrong")   
+       seterror((prev) => ({
+    ...prev,
+    backend: err.response?.data?.message || 'Something went wrong',
+  }));
+  setloading(false);
     }
   };
 
@@ -110,6 +115,10 @@ form
       <button className="w-full bg-green-500 text-white py-2 rounded" onClick={handleRegister}>
         Signup
       </button>
+      {error.backend && (
+  <p className="text-red-500 text-center text-sm mt-2">{error.backend}</p>
+)}
+
     </div>
   );
 }
