@@ -12,9 +12,11 @@ export class RemoveItemFromCartUseCase {
     const cart = await this.cartRepo.getCart(userId);
     if (!cart) throw new Error('Cart not found');
 
-    const updatedItems = cart.items.filter(
-      (item: any) => item.productId.toString() !== productId
-    );
+  const updatedItems = cart.items.filter((item: any) => {
+  const id = typeof item.productId === 'object' ? item.productId._id.toString() : item.productId.toString();
+  return id !== productId;
+});
+
 
     if (updatedItems.length === 0) {
       // Delete entire cart

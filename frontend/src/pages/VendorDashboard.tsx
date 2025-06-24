@@ -47,10 +47,25 @@ export default function VendorDashboard() {
     setOrders(res.data);
   };
 
-  useEffect(() => {
-    fetchProducts();
-    fetchOrders();
-  }, []);
+ useEffect(() => {
+   if (!vendorId) {
+    navigate('/login', { replace: true });
+  }
+  fetchProducts();
+  fetchOrders();
+
+  // Prevent back navigation after login
+  window.history.pushState(null, "", window.location.href);
+  const handlePopState = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, [vendorId]);
+
 
   const handleLogout = async () => {
     localStorage.removeItem('userId');
@@ -172,6 +187,10 @@ const handleDeleteConfirmed = async () => {
 
 
   return (
+<div className="min-h-screen bg-gray-100">
+      <header className="bg-blue-900 text-white py-4 px-6 text-2xl font-bold text-center">
+        Bulk Base
+      </header>
     <div className="max-w-5xl mx-auto p-4 relative">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Vendor Dashboard</h1>
@@ -205,69 +224,120 @@ const handleDeleteConfirmed = async () => {
           ))}
         </Tab.List>
         <Tab.Panels className="mt-4">
-          <Tab.Panel>
-            <ul className="space-y-3">
-              {products.map((p: any) => (
-                <li key={p._id} className="border p-4 rounded shadow-sm">
-                  <div>
-                    <h2 className="text-lg font-semibold">{p.title}</h2>
-                    <p>Price: ₹{p.pricePerUnit}</p>
-                    <p>Available: {p.availableQty}</p>
+<Tab.Panel>
+  <ul className="space-y-4">
+    {products.map((p: any) => (
+      <li key={p._id} className="bg-white border border-gray-300 rounded-lg shadow p-4">
+        <div className="flex items-start space-x-4">
+         
+          <div className="flex-1">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <p className="font-semibold text-gray-600">Product Name</p>
+                <p>{p.title}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-600">Item Price</p>
+                <p>₹{p.pricePerUnit}</p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-600">Stock Quantity</p>
+                <p>
+                  {p.availableQty === 0 ? (
+                    <span className="text-red-600 font-semibold">Out of Stock</span>
+                  ) : (
+                    p.availableQty
+                  )}
+                </p>
+              </div>
+              <div>
+                <p className="font-semibold text-gray-600">Min. Order Qty</p>
+                <p>{p.minOrderQty}</p>
+              </div>
+            </div>
 
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        className="bg-yellow-500 text-white px-2 py-1 rounded"
-                        onClick={() => openEditModal(p)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-2 py-1 rounded"
-                        onClick={() => confirmDeleteProduct(p._id)}
-                        >
-                        Delete
-                        </button>
+            <div className="mt-4">
+              <p className="font-semibold text-gray-600">Product Description</p>
+              <p className="text-gray-700 text-sm">{p.description}</p>
+            </div>
 
-                    </div>
+            <div className="flex gap-2 mt-4">
+              <button
+                className="bg-yellow-500 text-white px-3 py-1 rounded text-sm"
+                onClick={() => openEditModal(p)}
+              >
+                Edit
+              </button>
+              <button
+                className="bg-red-500 text-white px-3 py-1 rounded text-sm"
+                onClick={() => confirmDeleteProduct(p._id)}
+              >
+                Delete
+              </button>
+            </div>
 
-                    <form
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        const email = e.currentTarget.email.value;
-                        const price = e.currentTarget.price.value;
-                        try {
-                          await axiosInstance.patch(`/products/${p._id}/custom-pricing`, {
-                            email,
-                            price,
-                          });
-                          toast.success('Custom pricing updated');
-                          fetchProducts();
-                        } catch {
-                          toast.error('Failed to update');
-                        }
-                      }}
-                      className="mt-3 space-y-2"
-                    >
-                      <input name="email" required className="border p-1 w-full" placeholder="Customer email" />
-                      <input name="price" type="number" required className="border p-1 w-full" placeholder="Custom price" />
-                      <button type="submit" className="bg-blue-500 text-white px-3 py-1 rounded">Set Custom Price</button>
-                    </form>
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                const email = e.currentTarget.email.value;
+                const price = e.currentTarget.price.value;
+                try {
+                  await axiosInstance.patch(`/products/${p._id}/custom-pricing`, {
+                    email,
+                    price,
+                  });
+                  toast.success('Custom pricing updated');
+                  fetchProducts();
+                } catch {
+                  toast.error('Failed to update');
+                }
+              }}
+              className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3"
+            >
+              <input
+                name="email"
+                required
+                className="border p-2 rounded text-sm"
+                placeholder="Customer Email"
+              />
+              <input
+                name="price"
+                type="number"
+                required
+                className="border p-2 rounded text-sm"
+                placeholder="Custom Price"
+              />
+              <div className="sm:col-span-2">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-4 py-2 rounded text-sm w-full"
+                >
+                  Set Custom Price
+                </button>
+              </div>
+            </form>
 
-                    {Object.entries(p.customPricing || {}).length > 0 && (
-                      <div className="mt-2">
-                        <h4 className="text-sm font-semibold">Custom Prices:</h4>
-                        <ul className="text-sm ml-4 list-disc">
-                          {Object.entries(p.customPricing).map(([email, price]) => (
-                            <li key={email}>{email}: ₹{price as any}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </Tab.Panel>
+            {Object.entries(p.customPricing || {}).length > 0 && (
+              <div className="mt-3 text-sm">
+                <p className="font-semibold">Custom Prices:</p>
+                <ul className="list-disc ml-5">
+                  {Object.entries(p.customPricing).map(([email, price]) => (
+                    <li key={email}>
+                      <span className="text-gray-700">Email ID: {email}</span>
+                      <br />
+                      <span className="text-gray-600">Price: ₹{price as any}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </li>
+    ))}
+  </ul>
+</Tab.Panel>
+
           <Tab.Panel>
             <IncomingOrders />
           </Tab.Panel>
@@ -333,6 +403,7 @@ const handleDeleteConfirmed = async () => {
 )}
 
 
+    </div>
     </div>
     
   );
