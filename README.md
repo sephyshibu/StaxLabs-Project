@@ -35,6 +35,15 @@ A modern full-stack wholesale marketplace web application where vendors can list
 ### Toast Notifications
 - Realtime feedback for user actions (add to cart, block, place order, etc.)
 
+ ### Timezone Handling
+To ensure accurate date and time representation across different user locations, we handle timezones explicitly during order placement:
+
+Frontend:
+The user's local timezone is detected using the JavaScript Intl.DateTimeFormat().resolvedOptions().timeZone API and sent along with the order data
+Backend:
+The backend receives the timezone string and can use it to store, display, or manipulate date-time values appropriately using libraries like moment-timezone.
+
+This ensures all timestamps (such as order creation time) are correctly contextualized for the user’s local time zone, improving clarity and consistency across global users.
 ---
 
 ##  Tech Stack
