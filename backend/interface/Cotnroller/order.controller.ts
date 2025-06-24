@@ -8,6 +8,7 @@ import { AddToCartUseCase } from '../../application/usecase/Cart/AddCart';
 import { GetCartUseCase } from '../../application/usecase/Cart/GetCart';
 import { RemoveItemFromCartUseCase } from '../../application/usecase/Cart/Removeitem';
 import { GetAllOrders } from '../../application/usecase/Order/GetAllOrders';
+import { GetUSerOrder } from '../../application/usecase/Order/GetUserOrder';
 import { formatToUserTimezone } from '../../utils/TimeFormatter';
 
 export class OrderController {
@@ -18,7 +19,8 @@ export class OrderController {
     private addcart:AddToCartUseCase,
     private getcart:GetCartUseCase,
     private removeitemfromcart:RemoveItemFromCartUseCase,
-    private getallorders:GetAllOrders
+    private getallorders:GetAllOrders,
+    private getuserordder:GetUSerOrder
   ) {}
 
   async create(req: ExtendedRequest, res: Response) {
@@ -99,6 +101,13 @@ const status = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase();
     const customerId = req.user.id;
     const cart = await this.getcart.execute(customerId);
     res.json(cart);
+  }
+
+  async getOrders(req:ExtendedRequest,res:Response){
+    if(!req.user) return res.sendStatus(403)
+    const customerId=req.user.id
+  const orderbyuser=await this.getuserordder.execute(customerId)
+  res.status(200).json(orderbyuser)
   }
   
   async removeFromCart(req: ExtendedRequest, res: Response) {

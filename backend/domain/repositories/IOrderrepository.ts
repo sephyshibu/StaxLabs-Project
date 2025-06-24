@@ -7,4 +7,5 @@ export interface IOrderRepository {
   getAllOrders():Promise<IOrder[]>
   getOrdersByVendor(vendorId: string): Promise<IOrder[]>;
   updateOrderStatus(orderId: string, vendorId: string, status: string): Promise<IOrder | null>;
+  getUSerOrders(customerId:string):Promise<IOrder[]|null>
 }

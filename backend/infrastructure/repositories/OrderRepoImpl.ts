@@ -19,8 +19,14 @@ async getAllOrders(): Promise<IOrder[]> {
     .populate('items.productId', 'title pricePerUnit'); // fetch product name & price
     return orders.map(order => order.toObject()); // ✅ convert to plain object
   }
+  
+async getUSerOrders(customerId: string): Promise<IOrder[] | null> {
+    const orders=await OrderModel.find({customerId})
+    if(!orders) return null
+    return orders
+}
 
-  async getOrdersByVendor(vendorId: string): Promise<IOrder[]> {
+async getOrdersByVendor(vendorId: string): Promise<IOrder[]> {
     return await OrderModel.find({ vendorId })
       .populate('customerId', 'name email')
       .populate('items.productId', 'title pricePerUnit');
