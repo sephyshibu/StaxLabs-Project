@@ -3,7 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'
 import { authenticateJWT } from '../infrastructure/middleware/Auth';
-
+import {globalLimiter} from '../infrastructure/middleware/ratelimiter'
+import helmet from 'helmet'
 import authrouter from '../interface/Routes/auth.route';
 import userrouter from '../interface/Routes/user.routes';
 import orderrouter from '../interface/Routes/order.routes';
@@ -25,6 +26,8 @@ export class App{
             origin: ['http://localhost:5173', 'http://localhost:5174','http://localhost:5175','https://www.home-pro.sephy.live'],
             credentials:true
         }))
+        this.app.use(helmet())
+        this.app.use(globalLimiter);
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }));
 
