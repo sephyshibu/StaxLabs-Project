@@ -8,6 +8,8 @@ import { UpdateProductUseCase } from '../../application/usecase/Product/UpdatePr
 import { GetAllProductProductUseCase } from '../../application/usecase/Product/GetAllProduct';
 import { GetVendorProductProductUseCase } from '../../application/usecase/Product/GetVendorproduct';
 import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
+import { BlockProductUseCase } from '../../application/usecase/Product/BlockProduct';
+import { UnblockProductUseCase } from '../../application/usecase/Product/UnBlock';
 export class ProductController{
 
     constructor(
@@ -16,7 +18,9 @@ export class ProductController{
         private _updateproduct:UpdateProductUseCase,
         private _getallproduct:GetAllProductProductUseCase,
         private _getvendorproduct:GetVendorProductProductUseCase,
-        private _setcustomprice:SetCustomPriceUseCase
+        private _setcustomprice:SetCustomPriceUseCase,
+        private _blockproduct:BlockProductUseCase,
+        private _unblockproduct:UnblockProductUseCase
       ){}
 
      async createProduct(req: ExtendedRequest, res: Response) {
@@ -98,6 +102,17 @@ async setCustomPrice(req: ExtendedRequest, res: Response) {
   await product.save();
 
   res.json({ message: 'Custom pricing updated', product });
+}
+async blockProduct(req:ExtendedRequest, res:Response) {
+   if (!req.user) return res.sendStatus(403);
+  const product = await this._blockproduct.blockProduct(req.params.id);
+  res.json(product);
+}
+
+async unblockProduct(req:ExtendedRequest, res:Response) {
+   if (!req.user) return res.sendStatus(403);
+  const product = await this._unblockproduct.unblockProduct(req.params.id);
+  res.json(product);
 }
 
 

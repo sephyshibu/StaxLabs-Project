@@ -15,5 +15,10 @@ const productSchema = new mongoose.Schema<IProduct>({
     of: Number,
     default: {},
   },
+  isBlocked: {
+  type: Boolean,
+  default: false,
+}
+
 });
 export const ProductModel= mongoose.model<IProduct>('Product', productSchema);

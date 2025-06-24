@@ -9,7 +9,8 @@ import { UpdateProductUseCase } from '../../application/usecase/Product/UpdatePr
 import { GetAllProductProductUseCase } from '../../application/usecase/Product/GetAllProduct';
 import { GetVendorProductProductUseCase } from '../../application/usecase/Product/GetVendorproduct';
 import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
-
+import { BlockProductUseCase } from '../../application/usecase/Product/BlockProduct';
+import { UnblockProductUseCase } from '../../application/usecase/Product/UnBlock';
 
 
 import { ProductRepositoryImpl } from '../../infrastructure/repositories/ProductRepoImpl';
@@ -25,13 +26,21 @@ const updateingproduct= new UpdateProductUseCase(productrepository)
 const getallproduct= new GetAllProductProductUseCase(productrepository)
 const vendorproducts= new GetVendorProductProductUseCase(productrepository)
 const setcustomprice=new SetCustomPriceUseCase(productrepository)
+const blockproduct=new BlockProductUseCase(productrepository)
+const unblockproduct= new UnblockProductUseCase(productrepository)
+
+
+
+
 const productcontroller= new ProductController(
     createproduct,
     deletingproduct,
     updateingproduct,
     getallproduct,
     vendorproducts,
-    setcustomprice
+    setcustomprice,
+    blockproduct,
+    unblockproduct
 )
 
 productrouter.post('/', roleGuard(['vendor']), async (req, res) => {
@@ -58,6 +67,16 @@ productrouter.delete('/:id', roleGuard(['vendor']), async(req, res) =>{
 productrouter.patch('/:id/custom-pricing', roleGuard(['vendor']), async (req, res) => {
   await productcontroller.setCustomPrice(req, res);
 });
+
+productrouter.patch('/:id/block', roleGuard(['admin']),async(req,res)=>{
+  await productcontroller.blockProduct(req,res);
+});
+
+
+productrouter.patch('/:id/unblock', roleGuard(['admin']), async(req,res)=>{
+  await productcontroller.unblockProduct(req,res);
+});
+
 
 
 export default productrouter;

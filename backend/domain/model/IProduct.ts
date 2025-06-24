@@ -7,4 +7,5 @@ export interface IProduct {
   availableQty: number;
   vendorId: Object;
   customPricing: Map<string, number>; // customerId -> price
+  isBlocked?: boolean; // <--- Add this
 }
