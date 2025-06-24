@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import API from '../../components/Axios/axios';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
+import { clearCredentials } from '../../components/features/AuthSlice';
+import {persistor} from '../../components/app/store'
+import { useNavigate } from 'react-router-dom';
 
 interface Product {
   _id: string;
@@ -24,11 +28,22 @@ export default function Products() {
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [cart, setCart] = useState<CartItem[]>([]);
   const userId = localStorage.getItem('userId');
+    const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProducts();
     fetchCart();
   }, []);
+
+  const handleLogout = async () => {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('email');
+    dispatch(clearCredentials());
+    await persistor.purge();
+    navigate('/login');
+  };
+
 
   const fetchProducts = async () => {
     const res = await API.get('/products');
@@ -102,6 +117,12 @@ export default function Products() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Available Products</h1>
+         <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Logout
+        </button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {products.map((p) => (
@@ -110,15 +131,19 @@ export default function Products() {
             <p>{p.description}</p>
             <p className="text-sm text-gray-600">Min Qty: {p.minOrderQty}</p>
             <p className="text-sm text-gray-600">Available: {p.availableQty}</p>
+           {p.availableQty === 0 ? (
+            <span className="text-red-600 font-bold">Out of Stock</span>
+          ) : (
             <p className="text-green-600 font-bold">
-            ₹
-            {(() => {
-              const userEmail = localStorage.getItem('email'); // get user's email
-              const encodedEmail = userEmail?.replace(/\./g, '%2E') ?? '';
-              return p.customPricing?.[encodedEmail] ?? p.pricePerUnit;
-            })()}
-            /unit
-          </p>
+              ₹
+              {(() => {
+                const userEmail = localStorage.getItem('email');
+                const encodedEmail = userEmail?.replace(/\./g, '%2E') ?? '';
+                return p.customPricing?.[encodedEmail] ?? p.pricePerUnit;
+              })()}
+              /unit
+            </p>
+          )}
 
             <input
               type="number"

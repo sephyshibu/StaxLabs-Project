@@ -14,7 +14,7 @@ export default function IncomingOrders() {
     }
   };
 
-  const handleOrderAction = async (orderId: string, action: 'accept' | 'reject' | 'shipped' | 'delivered') => {
+  const handleOrderAction = async (orderId: string, action: 'accepted' | 'rejected' | 'shipped' | 'delivered') => {
     try {
       await axiosInstance.patch(`/orders/${orderId}/${action}`);
       toast.success(`Order ${action}ed`);
@@ -60,18 +60,18 @@ export default function IncomingOrders() {
                 <>
                   <button
                     className="bg-green-600 text-white px-3 py-1 rounded"
-                    onClick={() => handleOrderAction(o._id, 'accept')}
+                    onClick={() => handleOrderAction(o._id, 'accepted')}
                   >
                     Accept
                   </button>
                   <button
                     className="bg-red-600 text-white px-3 py-1 rounded"
-                    onClick={() => handleOrderAction(o._id, 'reject')}
+                    onClick={() => handleOrderAction(o._id, 'rejected')}
                   >
                     Reject
                   </button>
                 </>
-              ) : o.status === 'Accepted' ? (
+              ) :o.status === 'Accepted' || o.status === 'Shipped' ?(
                 <select
                   className="border px-3 py-1 rounded"
                   value=""
@@ -81,8 +81,8 @@ export default function IncomingOrders() {
                   }}
                 >
                   <option value="" disabled>Update Status</option>
-                  <option value="shipped">Shipped</option>
-                  <option value="delivered">Delivered</option>
+                 {o.status === 'Accepted' && <option value="shipped">Mark as Shipped</option>}
+      {o.status === 'Shipped' && <option value="delivered">Mark as Delivered</option>}
                 </select>
               ) : (
                 <span className="px-3 py-1 rounded bg-gray-200 text-gray-700">{o.status}</span>

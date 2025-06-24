@@ -18,8 +18,7 @@ export default function Register() {
   const navigate = useNavigate();
 
   const handleRegister = async () => {
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
+    
     seterror({})
         setloading(true)
 
@@ -67,7 +66,7 @@ form
            return
         }
     try {
-      await API.post('/auth/register', {form,timezone});
+      await API.post('/auth/register', form);
       navigate('/login');
     } catch (err: any) {
       console.error('Registration failed:', err);

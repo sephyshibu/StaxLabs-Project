@@ -60,8 +60,9 @@ async updateStatus(req: ExtendedRequest, res: Response) {
   const vendorId = req.user.id;
   const orderId = req.params.id;
   const action = req.params.action.toLowerCase();
+  console.log("update",vendorId,orderId,action)
 
-  if (!['accept', 'reject', 'shipped', 'delivered'].includes(action)) {
+  if (!['accepted', 'rejected', 'shipped', 'delivered'].includes(action)) {
   return res.status(400).json({ error: 'Invalid action' });
 }
 const status = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase();
@@ -71,6 +72,7 @@ const status = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase();
     if (!updatedOrder) {
       return res.status(404).json({ error: 'Order not found or not yours' });
     }
+    console.log("final update", updatedOrder)
     res.json(updatedOrder);
   } catch (err) {
     res.status(500).json({ error: 'Failed to update order status' });

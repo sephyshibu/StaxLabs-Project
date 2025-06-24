@@ -28,8 +28,9 @@ export class AuthController {
 
   async signup(req: Request, res: Response) {
     try {
-      const { name, email, password, role,timezone } = req.body;
-      const user = await this.signupUser.signup(name, email, password, role,timezone);
+      const { name, email, password, role } = req.body;
+      console.log("regis", req.body)
+      const user = await this.signupUser.signup(name, email, password, role);
       res.status(201).json(user);
     } catch (err: any) {
       res.status(400).json({ message: err.message });

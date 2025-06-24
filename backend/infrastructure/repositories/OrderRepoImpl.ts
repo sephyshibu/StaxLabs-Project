@@ -3,6 +3,8 @@
 import { IOrderRepository } from '../../domain/repositories/IOrderrepository';
 import OrderModel from '../models/OrderModel';
 import { IOrder } from '../../domain/model/IOrder';
+import { IProduct } from '../../domain/model/IProduct';
+import { ProductModel } from '../models/ProductsModel';
 
 export class OrderRepositoryImpl implements IOrderRepository {
   async createOrder(data: IOrder): Promise<IOrder> {
@@ -25,10 +27,32 @@ async getAllOrders(): Promise<IOrder[]> {
   }
 
   async updateOrderStatus(orderId: string, vendorId: string, status: string): Promise<IOrder | null> {
-    return await OrderModel.findOneAndUpdate(
-      { _id: orderId, vendorId },
-      { status },
-      { new: true }
-    );
+  const order = await OrderModel.findOne({ _id: orderId, vendorId })
+    .populate('items.productId');
+  
+
+  console.log("updated order",order)
+  if (!order) return null;
+
+
+  if (status === 'Accepted') {
+    for (const item of order.items) {
+      const product = item.productId as unknown as IProduct & { save: () => Promise<void> };
+      const qty = item.quantity;
+
+      if (product.availableQty < qty) {
+        throw new Error(`Not enough stock for ${product.title}`);
+      }
+
+      product.availableQty -= qty;
+      await product.save(); // Mongoose document has .save()
+    }
   }
+
+  order.status = status as IOrder['status'];
+
+  const response=await order.save();
+    console.log("order inte status", response)
+  return order;
+}
 }
