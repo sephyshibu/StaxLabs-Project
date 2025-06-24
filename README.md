@@ -27,7 +27,7 @@ A modern full-stack wholesale marketplace web application where vendors can list
 - Vendors can list and manage their own products
 - Blocked vendors are restricted from accessing the dashboard
 
-###Admin Dashboard
+### Admin Dashboard
 - View all users and vendors
 - Block/Unblock vendors and users
 - Monitor all orders
@@ -37,7 +37,7 @@ A modern full-stack wholesale marketplace web application where vendors can list
 
 ---
 
-## 🧰 Tech Stack
+##  Tech Stack
 
 | Frontend | Backend | Database | Auth |
 |----------|---------|----------|------|
