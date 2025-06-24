@@ -4,7 +4,7 @@ import { IUser } from '../../domain/model/IUser';
 
 export class UserRepositoryImpl implements IUserRepository {
   async findAll(): Promise<IUser[]> {
-    return await UserModel.find().lean();
+    return await UserModel.find({role:"customer"}).lean();
   }
 
   async deleteById(id: string): Promise<void> {

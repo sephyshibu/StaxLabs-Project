@@ -10,6 +10,7 @@ import { GetVendorProductProductUseCase } from '../../application/usecase/Produc
 import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
 import { BlockProductUseCase } from '../../application/usecase/Product/BlockProduct';
 import { UnblockProductUseCase } from '../../application/usecase/Product/UnBlock';
+import { GetUnBlockProductProductUseCase } from '../../application/usecase/Product/GetUnBLockProducts';
 export class ProductController{
 
     constructor(
@@ -20,7 +21,8 @@ export class ProductController{
         private _getvendorproduct:GetVendorProductProductUseCase,
         private _setcustomprice:SetCustomPriceUseCase,
         private _blockproduct:BlockProductUseCase,
-        private _unblockproduct:UnblockProductUseCase
+        private _unblockproduct:UnblockProductUseCase,
+        private _getunblock:GetUnBlockProductProductUseCase
       ){}
 
      async createProduct(req: ExtendedRequest, res: Response) {
@@ -59,6 +61,11 @@ export class ProductController{
 
   async getAllProducts(req: Request, res: Response) {
     const products = await this._getallproduct.getAllProduct();
+    res.json(products);
+  }
+
+  async getUnblockProducts(req: Request, res: Response) {
+    const products = await this._getunblock.getUnBlocProduct();
     res.json(products);
   }
 

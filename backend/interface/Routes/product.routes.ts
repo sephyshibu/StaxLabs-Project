@@ -11,7 +11,7 @@ import { GetVendorProductProductUseCase } from '../../application/usecase/Produc
 import { SetCustomPriceUseCase } from '../../application/usecase/Product/SetCustomPrice';
 import { BlockProductUseCase } from '../../application/usecase/Product/BlockProduct';
 import { UnblockProductUseCase } from '../../application/usecase/Product/UnBlock';
-
+import { GetUnBlockProductProductUseCase } from '../../application/usecase/Product/GetUnBLockProducts';
 
 import { ProductRepositoryImpl } from '../../infrastructure/repositories/ProductRepoImpl';
 
@@ -28,7 +28,7 @@ const vendorproducts= new GetVendorProductProductUseCase(productrepository)
 const setcustomprice=new SetCustomPriceUseCase(productrepository)
 const blockproduct=new BlockProductUseCase(productrepository)
 const unblockproduct= new UnblockProductUseCase(productrepository)
-
+const fetchunblockproduct= new GetUnBlockProductProductUseCase(productrepository)
 
 
 
@@ -40,7 +40,8 @@ const productcontroller= new ProductController(
     vendorproducts,
     setcustomprice,
     blockproduct,
-    unblockproduct
+    unblockproduct,
+    fetchunblockproduct
 )
 
 productrouter.post('/', roleGuard(['vendor']), async (req, res) => {
@@ -51,6 +52,11 @@ productrouter.post('/', roleGuard(['vendor']), async (req, res) => {
 productrouter.get('/', async (req, res) =>{
   await productcontroller.getAllProducts(req, res)
 });
+
+productrouter.get('/userside', async (req, res) =>{
+  await productcontroller.getUnblockProducts(req, res)
+});
+
 
 productrouter.get('/:vendorId', async (req, res) =>{
   await productcontroller.getvendorproduct(req, res)

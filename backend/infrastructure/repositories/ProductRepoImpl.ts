@@ -12,6 +12,10 @@ export class ProductRepositoryImpl implements IProductRepository {
     return await ProductModel.find().populate('vendorId', 'name');
   }
 
+  async findUnblockProducts():Promise<IProduct[]>{
+     return await ProductModel.find({isBlocked:false}).populate('vendorId', 'name');
+  }
+
   async update(id: string, vendorId: string, updateData: Partial<IProduct>): Promise<IProduct | null> {
     const updated = await ProductModel.findOneAndUpdate(
       { _id: id, vendorId },

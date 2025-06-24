@@ -70,7 +70,7 @@ export default function Products() {
   };
 
   const fetchProducts = async () => {
-    const res = await API.get('/products');
+    const res = await API.get('/products/userside');
     setProducts(res.data);
     const initial: Record<string, number> = {};
     res.data.forEach((p: Product) => {
