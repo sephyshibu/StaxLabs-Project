@@ -6,6 +6,12 @@ import { clearCredentials } from '../../components/features/AuthSlice';
 import { persistor } from '../../components/app/store';
 import { useNavigate } from 'react-router-dom';
 
+interface Vendor {
+  _id: string;
+  name: string;
+}
+
+
 interface Product {
   _id: string;
   title: string;
@@ -13,7 +19,7 @@ interface Product {
   pricePerUnit: number;
   minOrderQty: number;
   availableQty: number;
-  vendorId: string;
+  vendorId: Vendor;
   customPricing?: Record<string, number>;
 }
 
@@ -189,9 +195,14 @@ export default function Products() {
                   min={p.minOrderQty}
                   max={p.availableQty}
                   value={quantities[p._id] ?? p.minOrderQty}
-                  onChange={(e) =>
-                    setQuantities((prev) => ({ ...prev, [p._id]: Number(e.target.value) }))
-                  }
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    const limited = Math.min(value, p.availableQty);
+                    setQuantities((prev) => ({
+                      ...prev,
+                      [p._id]: limited,
+                    }));
+                  }}
                 />
                 <button
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded w-full"
