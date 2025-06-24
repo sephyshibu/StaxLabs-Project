@@ -25,7 +25,7 @@ export default function FetchUsers() {
     try {
       if (isBlocked) {
         await axiosInstance.patch(`/users/${userId}/unblock`);
-        
+
         toast.success('User unblocked');
       } else {
         await axiosInstance.patch(`/users/${userId}/block`);
@@ -38,26 +38,29 @@ export default function FetchUsers() {
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-3">All Users</h2>
-      <ul className="space-y-2">
+      <div className="max-w-4xl mx-auto px-4">
+      <h2 className="text-2xl font-semibold mb-6 text-center">All Users</h2>
+      <ul className="space-y-4">
         {users.map((u: any) => (
-          <li key={u._id} className="p-3 border rounded shadow-sm">
-          <div>
-              <div className="font-medium">{u.name}</div>
-              <div className="text-sm text-gray-600">{u.email}</div>
+          <li
+            key={u._id}
+            className="flex justify-between items-center bg-white shadow-md p-4 rounded-lg hover:shadow-lg transition-all"
+          >
+            <div>
+              <p className="text-lg font-medium text-gray-800">{u.name}</p>
+              <p className="text-sm text-gray-500">{u.email}</p>
             </div>
             <div>
               {u.isBlocked ? (
                 <button
-                  className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm"
                   onClick={() => handleToggleBlock(u._id, true)}
                 >
                   Unblock
                 </button>
               ) : (
                 <button
-                  className="bg-gray-600 text-white px-3 py-1 rounded text-sm"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm"
                   onClick={() => handleToggleBlock(u._id, false)}
                 >
                   Block

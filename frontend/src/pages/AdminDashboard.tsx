@@ -23,6 +23,10 @@ export default function AdminDashboard() {
             navigate('/login');
     };
   return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-blue-900 text-white py-4 px-6 text-2xl font-bold text-center">
+        Bulk Base
+      </header>
     <div className="max-w-6xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Admin Dashboard</h1>
         <button
@@ -56,6 +60,7 @@ export default function AdminDashboard() {
           <Tab.Panel><FetchVendors /></Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
+    </div>
     </div>
   );
 }
