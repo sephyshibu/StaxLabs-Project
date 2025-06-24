@@ -196,14 +196,14 @@ export default function Products() {
                   max={p.availableQty}
                   value={quantities[p._id] ?? p.minOrderQty}
                   onChange={(e) => {
-                    const value = Number(e.target.value);
-                    const limited = Math.min(value, p.availableQty);
-                    setQuantities((prev) => ({
-                      ...prev,
-                      [p._id]: limited,
-                    }));
-                  }}
-                />
+                  const value = Number(e.target.value);
+                  const limited = Math.min(value, p.availableQty);
+                  setQuantities((prev) => ({
+                    ...prev,
+                    [p._id]: limited,
+                  }));
+                }}
+              />
                 <button
                   className="mt-2 bg-blue-500 text-white px-3 py-1 rounded w-full"
                   onClick={() => handleAddToCart(p, quantities[p._id] ?? p.minOrderQty)}

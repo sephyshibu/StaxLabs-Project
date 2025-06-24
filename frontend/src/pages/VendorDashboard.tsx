@@ -100,7 +100,7 @@ export default function VendorDashboard() {
     isValid = false;
   }
 
-  if (!form.pricePerUnit.trim()) {
+  if (!form.pricePerUnit) {
     formErrors.pricePerUnit = "Price is required";
     isValid = false;
   } else if (isNaN(Number(form.pricePerUnit))) {
@@ -108,7 +108,7 @@ export default function VendorDashboard() {
     isValid = false;
   }
 
-  if (!form.minOrderQty.trim()) {
+  if (!form.minOrderQty) {
     formErrors.minOrderQty = "Minimum quantity is required";
     isValid = false;
   } else if (isNaN(Number(form.minOrderQty))) {
@@ -116,7 +116,7 @@ export default function VendorDashboard() {
     isValid = false;
   }
 
-  if (!form.availableQty.trim()) {
+  if (!form.availableQty) {
     formErrors.availableQty = "Available quantity is required";
     isValid = false;
   } else if (isNaN(Number(form.availableQty))) {

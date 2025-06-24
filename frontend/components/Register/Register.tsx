@@ -79,46 +79,56 @@ form
     }
   };
 
-  return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow-md rounded-md">
-      <h2 className="text-2xl font-bold mb-4">Signup</h2>
-      <input
-        className="w-full border p-2 mb-3 rounded"
-        placeholder='Name'
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-      />
-       {error.name && <p className="text-red-500 text-center text-sm">{error.name}</p>}
+return (
+    <div className="flex min-h-screen justify-center items-center bg-gradient-to-r from-green-50 to-blue-50 px-4">
+      <div className="w-full max-w-md bg-white shadow-xl rounded-2xl p-8 space-y-6">
+        <h2 className="text-3xl font-extrabold text-center text-gray-800">Create your account</h2>
 
-      <input
-        className="w-full border p-2 mb-3 rounded"
-        placeholder='Email'
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      {error.email && <p className="text-red-500 text-center text-sm">{error.email}</p>}
+        <div className="space-y-3">
+          <input
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Name"
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+          />
+          {error.name && <p className="text-red-500 text-sm">{error.name}</p>}
 
-      <input
-        className="w-full border p-2 mb-3 rounded"
-        placeholder='Password'
-        type='password'
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
-                   {error.password && <p className="text-red-500 text-center text-sm">{error.password}</p>}
-      <select
-        className="w-full border p-2 mb-4 rounded"
-        onChange={(e) => setForm({ ...form, role: e.target.value })}
-      >
-        <option value='customer'>Customer</option>
-        <option value='vendor'>Vendor</option>
-        <option value='admin'>Admin</option>
-      </select>
+          <input
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Email"
+            type="email"
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          {error.email && <p className="text-red-500 text-sm">{error.email}</p>}
 
-      <button className="w-full bg-green-500 text-white py-2 rounded" onClick={handleRegister}>
-        Signup
-      </button>
-      {error.backend && (
-  <p className="text-red-500 text-center text-sm mt-2">{error.backend}</p>
-)}
+          <input
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Password"
+            type="password"
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+          />
+          {error.password && <p className="text-red-500 text-sm">{error.password}</p>}
 
+          <select
+            className="w-full border border-gray-300 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
+          >
+            <option value="customer">Customer</option>
+            <option value="vendor">Vendor</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <button
+          onClick={handleRegister}
+          className="w-full py-3 text-white font-semibold rounded-lg bg-gradient-to-r from-green-500 to-blue-500 hover:opacity-90"
+        >
+          {loading ? 'Signing up...' : 'Signup'}
+        </button>
+
+        {error.backend && (
+          <p className="text-red-600 text-center text-sm mt-2">{error.backend}</p>
+        )}
+      </div>
     </div>
   );
 }
