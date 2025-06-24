@@ -3,7 +3,7 @@ import { GetAllUsers } from '../../application/usecase/Users/GetAllUsers';
 import { DeleteUser } from '../../application/usecase/Users/DeleteUser';
 import { BlockUser } from '../../application/usecase/Users/BlockUser';
 import { UnBlockUser } from '../../application/usecase/Users/UnblockUser';
-
+import { CheckUSerStatus } from '../../application/usecase/Users/CheckSUSerStatus';
 
 export class UserController {
   constructor(
@@ -11,6 +11,7 @@ export class UserController {
     private readonly deleteUser: DeleteUser,
     private readonly blockuser: BlockUser,
     private readonly unblockuser: UnBlockUser,
+    private readonly checkuserstatus: CheckUSerStatus,
 
   ) {}
 
@@ -34,6 +35,21 @@ unblockUser = async (req: Request, res: Response) => {
   await this.unblockuser.unblockUser(id);
   res.status(200).json({ message: 'User unblocked' });
 };
+ async getstatusUserById(req: Request, res: Response): Promise<void> {
+    const userId = req.params.id;
+    const user = await this.checkuserstatus.execute(userId);
 
+    if (!user) {
+      res.status(404).json({ message: 'User not found' });
+      return;
+    }
+
+    res.status(200).json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      isBlocked: user.isBlocked,
+    });
+  }
 
 }

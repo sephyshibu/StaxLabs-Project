@@ -14,7 +14,7 @@ export class AuthController {
     try {
       const { email, password,timezone } = req.body;
       const { user, accessToken, refreshToken } = await this.loginUser.login(email, password,timezone);
-
+      
       // res.cookie('accessToken', accessToken, { httpOnly: true, sameSite: 'lax' });
       console.log("refresh token", refreshToken)
       console.log("accesstokjen",accessToken)

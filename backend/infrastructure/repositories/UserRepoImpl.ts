@@ -30,5 +30,19 @@ export class UserRepositoryImpl implements IUserRepository {
 async unblockUser(id: string): Promise<void> {
   await UserModel.findByIdAndUpdate(id, { isBlocked: false });
 }
+async checkblockById(id: string): Promise<IUser | null> {
+     const user = await UserModel.findById(id).lean();
+    if (!user) return null;
+
+    return {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      role: user.role,
+      isBlocked: user.isBlocked,
+      timezone: user.timezone,
+    };
+}
 
 }

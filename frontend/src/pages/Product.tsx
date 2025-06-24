@@ -52,6 +52,9 @@ export default function Products() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+
+
+
   useEffect(() => {
     if (tab === 'marketplace') {
       fetchProducts();

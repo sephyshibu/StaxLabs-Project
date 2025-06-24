@@ -9,5 +9,6 @@ export interface IUserRepository {
   findById(id: string): Promise<IUser | null>;
   blockUser(id: string): Promise<void>;
 unblockUser(id: string): Promise<void>;
+  checkblockById(id: string): Promise<IUser | null>;
 
 }

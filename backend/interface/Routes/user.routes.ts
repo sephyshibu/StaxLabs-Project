@@ -6,7 +6,7 @@ import { DeleteUser } from '../../application/usecase/Users/DeleteUser';
 import { UserRepositoryImpl } from '../../infrastructure/repositories/UserRepoImpl';
 import { BlockUser } from '../../application/usecase/Users/BlockUser';
 import { UnBlockUser } from '../../application/usecase/Users/UnblockUser';
-
+import { CheckUSerStatus } from '../../application/usecase/Users/CheckSUSerStatus';
 const userrouter = express.Router();
 
 // DI
@@ -15,12 +15,15 @@ const getAllUsers = new GetAllUsers(repo);
 const deleteUser = new DeleteUser(repo);
 const blockuser= new BlockUser(repo)
 const unblockuser=new UnBlockUser(repo)
-const controller = new UserController(getAllUsers, deleteUser, blockuser,unblockuser);
+const checkuserstatus=new CheckUSerStatus(repo)
+
+const controller = new UserController(getAllUsers, deleteUser, blockuser,unblockuser,checkuserstatus);
 
 // Routes
+
 userrouter.get('/', roleGuard(['admin']), controller.getUsers);
-userrouter.delete('/:id', roleGuard(['admin']), controller.deleteUserById);
+
 userrouter.patch('/:id/block',roleGuard(['admin']) ,controller.blockUser);
 userrouter.patch('/:id/unblock', roleGuard(['admin']) ,controller.unblockUser);
-
+userrouter.get('/:id',roleGuard(['admin']), controller.getstatusUserById);
 export default userrouter;

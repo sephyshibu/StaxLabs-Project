@@ -37,6 +37,19 @@ axiosInstance.interceptors.response.use(
     
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
+     if (error.response) {
+      const status = error.response.status;
+      const message = (error.response.data as any)?.message;
+
+      if (status === 403 && message === 'User is blocked or invalid') {
+        toast.error(message); // ✅ show toast in frontend
+        store.dispatch(clearCredentials());
+        await persistor.purge();
+        localStorage.clear();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
+    
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log('401 error detected:', error.response); // ← MUST REACH HERE
       originalRequest._retry = true;
@@ -70,6 +83,9 @@ axiosInstance.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
+     if (message) toast.error(message);
+    }
+
 
     // Fallback: 403, 500 etc.
     console.log("Non-401 error handled:", error?.response?.status);

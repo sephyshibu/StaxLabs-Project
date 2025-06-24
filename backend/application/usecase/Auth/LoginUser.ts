@@ -14,8 +14,12 @@ export class LoginUser {
             throw new Error("password Not found")
           }
 
+      if (user.isBlocked) throw new Error("User is blocked or invalid");
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)  throw new Error("Invalid password")
+
+      
 
     const payload = { id: user.id, role: user.role };
     const accessToken = generateAccessToken(payload);

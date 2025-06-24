@@ -25,6 +25,7 @@ export default function FetchUsers() {
     try {
       if (isBlocked) {
         await axiosInstance.patch(`/users/${userId}/unblock`);
+        
         toast.success('User unblocked');
       } else {
         await axiosInstance.patch(`/users/${userId}/block`);
