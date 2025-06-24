@@ -22,4 +22,13 @@ export class UserRepositoryImpl implements IUserRepository {
   async findById(id: string): Promise<IUser | null> {
     return await UserModel.findById(id);
   }
+
+  async blockUser(id: string): Promise<void> {
+  await UserModel.findByIdAndUpdate(id, { isBlocked: true });
+}
+
+async unblockUser(id: string): Promise<void> {
+  await UserModel.findByIdAndUpdate(id, { isBlocked: false });
+}
+
 }

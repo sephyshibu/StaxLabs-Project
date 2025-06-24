@@ -7,5 +7,7 @@ export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
   createUser(userData: Omit<IUser, 'id'>): Promise<IUser>;
   findById(id: string): Promise<IUser | null>;
-  
+  blockUser(id: string): Promise<void>;
+unblockUser(id: string): Promise<void>;
+
 }

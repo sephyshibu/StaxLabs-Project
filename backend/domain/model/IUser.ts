@@ -7,5 +7,6 @@ export interface IUser {
   email: string;
   password: string;
   role: UserRole;
-  timezone?:string
+  timezone?:string;
+    isBlocked?: boolean; // <--- Add this
 }

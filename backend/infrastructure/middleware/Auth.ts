@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt, { JwtPayload,TokenExpiredError  } from 'jsonwebtoken';
-
+import { UserModel } from '../models/UserModel';
 interface ExtendedRequest extends Request {
   user?: {
     id: string;
@@ -8,11 +8,11 @@ interface ExtendedRequest extends Request {
   };
 }
 
-export const authenticateJWT = (
+export const authenticateJWT = async(
   req: ExtendedRequest,
   res: Response,
   next: NextFunction
-): void => {
+) => {
   const authHeader = req.headers.authorization;
   const token = authHeader?.split(' ')[1];
   const userIdHeader = req.headers['x-user-id'];
@@ -33,10 +33,18 @@ export const authenticateJWT = (
      return
     }
 
+    const user = await UserModel.findById(decoded.id);
+
+    if (!user || user.isBlocked) {
+      res.status(403).json({ message: 'User is blocked or invalid' });
+      return
+    }
+
     req.user = {
       id: typeof userIdHeader === 'string' ? userIdHeader : decoded.id,
       role: decoded.role as 'admin' | 'vendor' | 'customer',
     };
+    
 
     next();
   } catch (err) {
