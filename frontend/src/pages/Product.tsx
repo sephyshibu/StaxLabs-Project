@@ -56,6 +56,10 @@ export default function Products() {
 
 
   useEffect(() => {
+    if (!userId) {
+    navigate('/login', { replace: true });
+    return;
+  }
     if (tab === 'marketplace') {
       fetchProducts();
       fetchCart();

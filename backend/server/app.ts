@@ -27,7 +27,7 @@ export class App{
             credentials:true
         }))
         this.app.use(helmet())
-        this.app.use(globalLimiter);
+      
         this.app.use(express.json())
         this.app.use(express.urlencoded({ extended: true }));
 

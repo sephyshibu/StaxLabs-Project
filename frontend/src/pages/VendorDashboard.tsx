@@ -69,6 +69,7 @@ export default function VendorDashboard() {
 
   const handleLogout = async () => {
     localStorage.removeItem('userId');
+    localStorage.removeItem('email')
     dispatch(clearCredentials());
     await persistor.purge();
     navigate('/login');

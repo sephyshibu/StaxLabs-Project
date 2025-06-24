@@ -38,10 +38,10 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as CustomAxiosRequestConfig;
 
      if (error.response) {
-      const status = error.response.status;
+      // const status = error.response.status;
       const message = (error.response.data as any)?.message;
 
-      if (status === 403 && message === 'User is blocked or invalid') {
+      if (message === 'User is blocked or invalid') {
         toast.error(message); // ✅ show toast in frontend
         store.dispatch(clearCredentials());
         await persistor.purge();
