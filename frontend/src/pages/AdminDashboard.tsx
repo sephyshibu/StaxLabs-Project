@@ -2,6 +2,7 @@ import { Tab } from '@headlessui/react';
 import FetchUsers from './FetchUser';
 import FetchOrders from './FetchOrder';
 import FetchProducts from './FetchProducts';
+import FetchVendors from './FetchVendors';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {persistor}from '../../components/app/store'
@@ -33,7 +34,7 @@ export default function AdminDashboard() {
 
       <Tab.Group>
         <Tab.List className="flex space-x-2 bg-blue-100 p-2 rounded-lg">
-          {['Manage Products', 'Orders', 'Users'].map((tab) => (
+          {['Manage Products', 'Orders', 'Users', 'Vendor'].map((tab) => (
             <Tab
               key={tab}
               className={({ selected }) =>
@@ -52,6 +53,7 @@ export default function AdminDashboard() {
           <Tab.Panel><FetchProducts /></Tab.Panel>
           <Tab.Panel><FetchOrders /></Tab.Panel>
           <Tab.Panel><FetchUsers /></Tab.Panel>
+          <Tab.Panel><FetchVendors /></Tab.Panel>
         </Tab.Panels>
       </Tab.Group>
     </div>

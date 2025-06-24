@@ -4,7 +4,7 @@ import { DeleteUser } from '../../application/usecase/Users/DeleteUser';
 import { BlockUser } from '../../application/usecase/Users/BlockUser';
 import { UnBlockUser } from '../../application/usecase/Users/UnblockUser';
 import { CheckUSerStatus } from '../../application/usecase/Users/CheckSUSerStatus';
-
+import { GetAllVendors } from '../../application/usecase/Users/GetAllVendors';
 export class UserController {
   constructor(
     private readonly getAllUsers: GetAllUsers,
@@ -12,11 +12,17 @@ export class UserController {
     private readonly blockuser: BlockUser,
     private readonly unblockuser: UnBlockUser,
     private readonly checkuserstatus: CheckUSerStatus,
+    private readonly getallvendors:GetAllVendors
 
   ) {}
 
   getUsers = async (_req: Request, res: Response): Promise<void> => {
     const users = await this.getAllUsers.execute();
+    res.json(users);
+  };
+
+    getAllVendors = async (_req: Request, res: Response): Promise<void> => {
+    const users = await this.getallvendors.execute();
     res.json(users);
   };
 

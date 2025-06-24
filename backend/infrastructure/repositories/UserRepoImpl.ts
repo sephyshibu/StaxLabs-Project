@@ -6,6 +6,9 @@ export class UserRepositoryImpl implements IUserRepository {
   async findAll(): Promise<IUser[]> {
     return await UserModel.find({role:"customer"}).lean();
   }
+  async findAllVendor(): Promise<IUser[]> {
+       return await UserModel.find({role:"vendor"}).lean();
+  }
 
   async deleteById(id: string): Promise<void> {
     await UserModel.findByIdAndDelete(id);

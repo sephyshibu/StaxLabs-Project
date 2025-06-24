@@ -10,5 +10,6 @@ export interface IUserRepository {
   blockUser(id: string): Promise<void>;
 unblockUser(id: string): Promise<void>;
   checkblockById(id: string): Promise<IUser | null>;
+  findAllVendor():Promise<IUser[]>
 
 }
