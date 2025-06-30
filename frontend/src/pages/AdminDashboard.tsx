@@ -4,6 +4,7 @@ import FetchOrders from './FetchOrder';
 import FetchProducts from './FetchProducts';
 import FetchVendors from './FetchVendors';
 import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {persistor}from '../../components/app/store'
 import { clearCredentials } from '../../components/features/AuthSlice';
@@ -15,6 +16,22 @@ function classNames(...classes: string[]) {
 export default function AdminDashboard() {
       const dispatch = useDispatch();
       const navigate = useNavigate();
+      const adminId=localStorage.getItem('userId')
+
+      useEffect(() => {
+         if (!adminId) {
+          navigate('/login', { replace: true });
+        }
+        window.history.pushState(null, "", window.location.href);
+  const handlePopState = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
+}, [adminId]);
 
     const handleLogout =async () => {
         localStorage.clear(); // or remove only specific keys like localStorage.removeItem('token');

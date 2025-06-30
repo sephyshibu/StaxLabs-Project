@@ -58,14 +58,26 @@ export default function Products() {
   useEffect(() => {
     if (!userId) {
     navigate('/login', { replace: true });
-    return;
+    
+    
   }
+  
     if (tab === 'marketplace') {
       fetchProducts();
       fetchCart();
     } else if (tab === 'orders') {
       fetchOrders();
     }
+    // Prevent back navigation after login
+  window.history.pushState(null, "", window.location.href);
+  const handlePopState = () => {
+    window.history.pushState(null, "", window.location.href);
+  };
+  window.addEventListener("popstate", handlePopState);
+
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+  };
   }, [tab]);
 
   const handleLogout = async () => {
@@ -90,6 +102,7 @@ export default function Products() {
     try {
       const res = await API.get(`/orders/cart/${userId}`);
       setCart(res.data.items);
+      console.log("cart",res.data.items)
     } catch (err) {
       console.error('Error fetching cart', err);
     }

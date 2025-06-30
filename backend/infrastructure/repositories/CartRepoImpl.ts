@@ -12,7 +12,7 @@ export class CartRepoImpl implements ICartRepository {
   }
 
   async getCart(userId: string) {
-    return await CartModel.findOne({ userId }).populate('items.productId',"name pricePerUnit");
+    return await CartModel.findOne({ userId }).populate('items.productId',"title pricePerUnit");
   }
 
   async clearCart(userId: string) {
