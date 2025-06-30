@@ -9,6 +9,7 @@ export default function IncomingOrders() {
     try {
       const res = await axiosInstance.get('/orders/incoming');
       setOrders(res.data);
+
     } catch (err) {
       toast.error('Failed to fetch orders');
     }

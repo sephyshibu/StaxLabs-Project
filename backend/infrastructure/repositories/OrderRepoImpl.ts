@@ -21,7 +21,7 @@ async getAllOrders(): Promise<IOrder[]> {
   }
   
 async getUSerOrders(customerId: string): Promise<IOrder[] | null> {
-    const orders=await OrderModel.find({customerId})
+    const orders=await OrderModel.find({customerId}).populate('items.productId', 'title pricePerUnit');
     if(!orders) return null
     return orders
 }

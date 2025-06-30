@@ -307,7 +307,7 @@ export default function Products() {
                 <td className="py-3 px-4 flex items-center gap-2">
                  
                   <div>
-                    <p className="text-sm font-medium">{order.items[0]?.productId._id}</p>
+                    <p className="text-sm font-medium">{order.items[0]?.productId.title}</p>
                     <p className="text-xs text-gray-500">Qty: {order.items[0]?.quantity}</p>
                   </div>
                 </td>
