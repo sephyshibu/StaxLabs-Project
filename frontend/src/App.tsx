@@ -17,14 +17,13 @@ function App() {
           <ToastContainer position="top-right" />
           <Router>
       <Routes>
-        {/* Public routes */}
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Common route (accessible to all roles) */}
+    
         <Route path="/" element={<Products />} />
 
-        {/* Customer-only route */}
         <Route
           path="/order"
           element={
@@ -50,7 +49,7 @@ function App() {
         }
       />
 
-        {/* Vendor-only route */}
+
         <Route
           path="/vendor/orders"
           element={
