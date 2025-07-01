@@ -23,7 +23,7 @@ export class App{
 
     private setMiddleware():void{
         this.app.use(cors({
-            origin: ['http://localhost:5173', 'http://localhost:5174','http://localhost:5175','https://www.home-pro.sephy.live'],
+            origin: ['http://localhost:5173'],
             credentials:true
         }))
         this.app.use(helmet())

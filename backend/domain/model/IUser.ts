@@ -8,5 +8,5 @@ export interface IUser {
   password: string;
   role: UserRole;
   timezone?:string;
-    isBlocked?: boolean; // <--- Add this
+  isBlocked?: boolean;
 }

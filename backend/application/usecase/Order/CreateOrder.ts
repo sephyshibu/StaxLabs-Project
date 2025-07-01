@@ -38,7 +38,7 @@ export class CreateOrder {
         totalCost,
         status: 'Pending',
         createdAt: new Date(),
-         timezone, // 🕒 add this
+         timezone, 
       };
 
       const order = await this.orderRepo.createOrder(orderData);

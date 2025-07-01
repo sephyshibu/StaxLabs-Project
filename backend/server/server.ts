@@ -10,10 +10,10 @@ const PORT = process.env.PORT || 3000;
 const appInstance = new App();
 const app = appInstance.app;
 
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: 'http://localhost:3000',
+//   credentials: true,
+// }));
 
 connectDB().then(() => {
   app.listen(PORT, () => {

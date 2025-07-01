@@ -6,6 +6,6 @@ export interface IProduct {
   minOrderQty: number;
   availableQty: number;
   vendorId: Object;
-  customPricing: Map<string, number>; // customerId -> price
-  isBlocked?: boolean; // <--- Add this
+  customPricing: Map<string, number>; 
+  isBlocked?: boolean; 
 }
