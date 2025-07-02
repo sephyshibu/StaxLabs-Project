@@ -239,7 +239,21 @@ export default function Products() {
                 {items.map((item, index) => (
                   <li key={index} className="flex justify-between items-center mb-1">
                     <span>
-                      Product name: {item.productId.title} | Qty: {item.quantity}|Price:{item.productId.pricePerUnit}
+                        {(() => {
+                          const product = products.find(p => p._id === item.productId._id);
+                          if (!product) return null;
+                          const userEmail = localStorage.getItem('email');
+                          const encoded = userEmail?.replace(/\./g, '%2E') ?? '';
+                          const customPrice = product.customPricing?.[encoded];
+                          const priceToShow = customPrice ?? product.pricePerUnit;
+
+                          return (
+                            <>
+                              Product: {item.productId.title} | Qty: {item.quantity} | 
+                              Price: ₹{priceToShow} x {item.quantity} = ₹{priceToShow * item.quantity}
+                            </>
+                          );
+                        })()}
                     </span>
                     <button
                       onClick={async () => {

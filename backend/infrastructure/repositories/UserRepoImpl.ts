@@ -25,10 +25,15 @@ export class UserRepositoryImpl implements IUserRepository {
   async findById(id: string): Promise<IUser | null> {
     return await UserModel.findById(id);
   }
+  async findEmailById(id: string): Promise<string | null> {
+  const user = await UserModel.findById(id, { email: 1 }).lean(); // Only project email field
+  return user?.email || null;
+}
 
   async blockUser(id: string): Promise<void> {
   await UserModel.findByIdAndUpdate(id, { isBlocked: true });
 }
+
 
 async unblockUser(id: string): Promise<void> {
   await UserModel.findByIdAndUpdate(id, { isBlocked: false });

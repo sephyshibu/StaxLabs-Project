@@ -3,7 +3,7 @@ import express from 'express';
 import { roleGuard } from '../../infrastructure/middleware/RoleGaurd';
 import { OrderRepositoryImpl } from '../../infrastructure/repositories/OrderRepoImpl';
 import { CartRepoImpl } from '../../infrastructure/repositories/CartRepoImpl';
-
+import { UserRepositoryImpl } from '../../infrastructure/repositories/UserRepoImpl';
 
 import { CreateOrder } from '../../application/usecase/Order/CreateOrder';
 import { GetVendorOrders } from '../../application/usecase/Order/GetVendorOrders';
@@ -19,9 +19,10 @@ const orderrouter = express.Router();
 
 const orderRepo = new OrderRepositoryImpl();
 const cartRepo= new CartRepoImpl()
+const userRepo=new UserRepositoryImpl()
 
 const orderController = new OrderController(
-  new CreateOrder(orderRepo,cartRepo),
+  new CreateOrder(orderRepo,cartRepo,userRepo),
   new GetVendorOrders(orderRepo),
   new UpdateOrderStatus(orderRepo),
   new AddToCartUseCase(cartRepo),
