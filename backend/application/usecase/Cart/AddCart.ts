@@ -21,7 +21,7 @@ export class AddToCartUseCase {
         throw new Error('Product already in cart');
       }
 
-      // Add new item to existing items
+      
       updatedItems = [...existingCart.items, { productId, quantity, vendorId }];
     }
 

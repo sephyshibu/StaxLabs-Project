@@ -6,6 +6,6 @@ export class GetCartUseCase {
 
   async execute(customerId: string) {
     const cart = await this.cartRepo.getCart(customerId);
-    return cart || { items: [] }; // fallback to empty cart
+    return cart || { items: [] };
   }
 }
