@@ -219,9 +219,13 @@ export default function Products() {
                 />
                 <button
                   onClick={() => handleAddToCart(p, quantities[p._id] ?? p.minOrderQty)}
-                  className="w-full bg-black text-white py-2 rounded hover:bg-gray-800"
-                >
-                 Add to cart
+                   disabled={p.availableQty <= 0}
+                    className={`w-full py-2 rounded 
+                      ${p.availableQty <= 0 
+                        ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
+                        : 'bg-black text-white hover:bg-gray-800'}`}
+                  >
+                    {p.availableQty <= 0 ? 'Out of Stock' : 'Add to cart'}
                 </button>
               </div>
             </div>
