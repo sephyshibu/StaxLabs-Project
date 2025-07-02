@@ -25,7 +25,7 @@ export default function Register() {
 
         let formErrors:any={}
         let isValid=true
-form
+
         if (!form.name) {
           formErrors.name = "Username is required";
           isValid = false;

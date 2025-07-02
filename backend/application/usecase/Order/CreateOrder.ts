@@ -20,7 +20,7 @@ export class CreateOrder {
   async execute(customerId: string, items: CartItem[], timezone:string) {
     const grouped = new Map<string, CartItem[]>();
 
-    // 🔁 Group items by vendor
+    // Group items by vendor
     for (const item of items) {
       if (!grouped.has(item.vendorId)) grouped.set(item.vendorId, []);
       grouped.get(item.vendorId)!.push(item);

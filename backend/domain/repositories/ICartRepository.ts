@@ -1,4 +1,4 @@
-// domain/repositories/ICartRepository.ts
+
 export interface ICartRepository {
   saveCart(userId: string, items: any[]): Promise<any>;
   getCart(userId: string): Promise<any>;

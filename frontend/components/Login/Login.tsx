@@ -47,11 +47,11 @@ export default function Login() {
       dispatch(setCredentials({ token: accessToken, role: res.data.user.role ,  id: res.data.user._id, }));
      
     if (user.role === 'vendor') {
-      navigate('/vendor/dashboard'); // 👉 redirect vendor to their dashboard
+      navigate('/vendor/dashboard'); 
     } else if (user.role === 'customer') {
-      navigate('/'); // customer to home
+      navigate('/'); 
     } else if (user.role === 'admin') {
-      navigate('/admin/dashboard'); // if needed
+      navigate('/admin/dashboard'); 
     }
   } catch (err: any) {
     console.error('Login failed:', err);

@@ -112,6 +112,7 @@ export default function Products() {
     try {
       const res = await API.get(`/orders/user/${userId}`);
       setOrders(res.data);
+      console.log("ordersd", res.data)
     } catch (err) {
       toast.error('Failed to load orders');
     }
@@ -304,12 +305,14 @@ export default function Products() {
           <tbody>
             {orders.map((order) => (
               <tr key={order._id} className="border-t hover:bg-gray-50">
-                <td className="py-3 px-4 flex items-center gap-2">
-                 
-                  <div>
-                    <p className="text-sm font-medium">{order.items[0]?.productId.title}</p>
-                    <p className="text-xs text-gray-500">Qty: {order.items[0]?.quantity}</p>
-                  </div>
+                <td className="py-3 px-4">
+                  {order.items.map((item, idx) => (
+                    <div key={idx} className="mb-1">
+                      <p className="text-sm font-medium">
+                        {item.productId.title} <span className="text-xs text-gray-500">Qty: {item.quantity}</span>
+                      </p>
+                    </div>
+                  ))}
                 </td>
                 <td className="py-3 px-4">Vendor {order.vendorId}</td>
                 <td className="py-3 px-4">
