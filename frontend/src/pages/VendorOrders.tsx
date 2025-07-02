@@ -4,10 +4,14 @@ import { toast } from 'react-toastify';
 
 export default function IncomingOrders() {
   const [orders, setOrders] = useState<any[]>([]);
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 
   const fetchOrders = async () => {
     try {
-      const res = await axiosInstance.get('/orders/incoming');
+      const res = await axiosInstance.get('/orders/incoming', {
+      params: { timezone }
+    });
       setOrders(res.data);
 
     } catch (err) {

@@ -23,15 +23,16 @@ export default function AdminDashboard() {
           navigate('/login', { replace: true });
         }
         window.history.pushState(null, "", window.location.href);
-  const handlePopState = () => {
-    window.history.pushState(null, "", window.location.href);
-  };
-  window.addEventListener("popstate", handlePopState);
+        
+        const handlePopState = () => {
+          window.history.pushState(null, "", window.location.href);
+        };
+        window.addEventListener("popstate", handlePopState);
 
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, [adminId]);
+        return () => {
+          window.removeEventListener("popstate", handlePopState);
+        };
+      }, [adminId]);
 
     const handleLogout =async () => {
         localStorage.clear(); // or remove only specific keys like localStorage.removeItem('token');

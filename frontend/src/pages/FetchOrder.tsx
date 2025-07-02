@@ -61,8 +61,8 @@ export default function FetchOrders() {
               <p><strong>Vendor:</strong> {order.vendorId?.name || 'N/A'}</p>
               <p><strong>Customer:</strong> {order.customerId?.name || 'N/A'}</p>
               <p><strong>Total:</strong> ₹{order.totalCost}</p>
-              <p><strong>Created:</strong> {order.createdAt}</p>
-              <p><strong>Updated:</strong> {order.updatedAt}</p>
+              {/* <p><strong>Created:</strong> {order.createdAt}</p>
+              <p><strong>Updated:</strong> {order.updatedAt}</p> */}
             </div>
 
             <div>
@@ -70,7 +70,7 @@ export default function FetchOrders() {
               <ul className="list-disc ml-5 text-sm text-gray-700 space-y-1">
                 {order.items.map((item: any, idx: number) => (
                   <li key={idx}>
-                    {item.productId?.title || 'Product'} — ₹{item.productId?.pricePerUnit} × {item.quantity}
+                    {item.productId?.title || 'Product'} — {item.quantity}
                   </li>
                 ))}
               </ul>

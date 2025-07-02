@@ -52,7 +52,8 @@ export class OrderController {
   async getForVendor(req: ExtendedRequest, res: Response) {
       if (!req.user) return res.sendStatus(403);
     const vendorId = req.user.id;
-    const orders = await this.getVendorOrders.execute(vendorId);
+    const timezone = (req.query.timezone as string) || 'UTC';
+    const orders = await this.getVendorOrders.execute(vendorId,timezone);
     res.json(orders);
   }
 

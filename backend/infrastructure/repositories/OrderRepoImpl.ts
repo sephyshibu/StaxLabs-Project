@@ -29,7 +29,7 @@ async getUSerOrders(customerId: string): Promise<IOrder[] | null> {
 async getOrdersByVendor(vendorId: string): Promise<IOrder[]> {
     return await OrderModel.find({ vendorId })
       .populate('customerId', 'name email')
-      .populate('items.productId', 'title pricePerUnit');
+      .populate('items.productId', 'title pricePerUnit').lean();
   }
 
   async updateOrderStatus(orderId: string, vendorId: string, status: string): Promise<IOrder | null> {
