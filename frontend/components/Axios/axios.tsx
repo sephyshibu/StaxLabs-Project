@@ -15,7 +15,7 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean;
   }
 
-// ✅ Request Interceptor
+//  Request Interceptor
 axiosInstance.interceptors.request.use(
   (config: CustomAxiosRequestConfig) => {
     const { token, role, id } = store.getState().auth;
@@ -29,7 +29,7 @@ axiosInstance.interceptors.request.use(
   (error: AxiosError) => Promise.reject(error)
 );
 
-// ✅ Response Interceptor
+//  Response Interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
