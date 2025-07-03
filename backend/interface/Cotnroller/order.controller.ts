@@ -25,9 +25,10 @@ export class OrderController {
 
   async create(req: ExtendedRequest, res: Response) {
       if (!req.user) return res.sendStatus(403);
-    const { items } = req.body;
+    const { items,timezone } = req.body;
     const customerId = req.user.id;
-    const timezone = req.user.timezone || 'UTC'; // 🕒 get from authenticated user
+   
+    console.log("backend time", timezone)
     const order = await this.createOrder.execute(customerId, items,timezone);
    res.status(201).json(order.map(o => ({
   ...o,

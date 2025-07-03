@@ -145,6 +145,7 @@ export default function Products() {
   const handlePlaceOrder = async () => {
     try {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+      console.log("user timexone", timezone)
       await API.post('/orders', { items: cart, timezone });
       toast.success('Order placed!');
       setCart([]);
